@@ -41,7 +41,7 @@ Info = {
         "preproc": 255,
         "shape": (False, 32, 32, 1),
     },
-    "nist": {
+    "omniglot": {
         "n_cls": 1623,
         "preproc": None,
         "shape": (False, 105, 105, 1),
