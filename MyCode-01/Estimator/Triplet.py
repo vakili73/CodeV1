@@ -10,13 +10,13 @@ from tensorflow.keras import backend as K
 from tensorflow.keras import Model, layers
 from pandas.util.testing import isiterable
 
-# %% SiameseTriplet calss
+# %% Triplet calss
 
 
-class SiameseTriplet(BaseEstimator):
+class Triplet(BaseEstimator):
     def __init__(self,
                  model: Model = Model()):
-        super().__init__('SiameseTriplet', model)
+        super().__init__('Triplet', model)
         pass
 
     def _get_batch(self, X_train, y_train, n_cls, batch_size=128):

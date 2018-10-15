@@ -10,13 +10,13 @@ from tensorflow.keras import backend as K
 from tensorflow.keras import Model, layers
 from pandas.util.testing import isiterable
 
-# %% SiameseDouble calss
+# %% Siamese calss
 
 
-class SiameseDouble(BaseEstimator):
+class Siamese(BaseEstimator):
     def __init__(self,
                  model: Model = Model()):
-        super().__init__('SiameseDouble', model)
+        super().__init__('Siamese', model)
         pass
 
     def build(self, shape):

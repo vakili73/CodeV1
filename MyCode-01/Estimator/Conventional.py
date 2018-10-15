@@ -7,13 +7,13 @@ from Database import Dataset
 from tensorflow.keras import Model, layers
 from pandas.util.testing import isiterable
 
-# %% ConvenientNN calss
+# %% Conventional calss
 
 
-class ConvenientNN(BaseEstimator):
+class Conventional(BaseEstimator):
     def __init__(self,
                  model: Model = Model()):
-        super().__init__('ConvenientNN', model)
+        super().__init__('Conventional', model)
         pass
 
     def fit(self, db: Dataset,

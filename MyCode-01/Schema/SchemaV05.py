@@ -9,7 +9,7 @@ class SchemaV05(BaseSchema):
         super().__init__('SchemaV05')
         pass
 
-    def buildConvenient(self, shape, n_cls):
+    def buildConventional(self, shape, n_cls):
         model = self.build(shape)
         model.add(layers.Dropout(0.1))
         layer01 = layers.Dense(128, activation='relu')
@@ -27,6 +27,19 @@ class SchemaV05(BaseSchema):
         pass
 
     def buildSiamese(self, shape, n_cls):
+        model = self.build(shape)
+        model.add(layers.Dropout(0.1))
+        layer01 = layers.Dense(128, activation='relu')
+        model.add(layer01)
+
+        self._add_layer_ex('dense_128_relu', layer01.output)
+
+        self.input = model.input
+        self.output = model.output
+        self.model = model
+        pass
+
+    def buildTriplet(self, shape, n_cls):
         model = self.build(shape)
         model.add(layers.Dropout(0.1))
         layer01 = layers.Dense(128, activation='relu')

@@ -26,12 +26,12 @@ for data, version in Conf:
     db.histogram()
     db.summary()
 
-    # %% ConvenientNN
-    schema = Loader.getSchema(db, version, Estm.CNN)
+    # %% Conventional
+    schema = Loader.getSchema(db, version, Estm.Conventional)
     schema.summary()
-    schema.plot(Estm.CNN.value)
+    schema.plot(Estm.Conventional.value)
 
-    estimator = ConvenientNN(schema.getModel())
+    estimator = Conventional(schema.getModel())
     estimator.compile(loss=losses.categorical_crossentropy,
                       optimizer='adadelta',
                       metric=['acc'])
@@ -51,12 +51,12 @@ for data, version in Conf:
     schema.saveWeights(estimator.name+'_'+data)
     schema.extract(estimator.name, db)
 
-    # %% SiameseDouble
-    schema = Loader.getSchema(db, version, Estm.SiD)
+    # %% Siamese
+    schema = Loader.getSchema(db, version, Estm.Siamese)
     schema.summary()
-    schema.plot(Estm.SiD.value)
+    schema.plot(Estm.Siamese.value)
 
-    estimator = SiameseDouble(schema.getModel())
+    estimator = Siamese(schema.getModel())
     estimator.build(db.get_shape())
     estimator.compile(loss=contrastive_loss(margin=1),
                       optimizer='adadelta',
@@ -71,12 +71,12 @@ for data, version in Conf:
     schema.saveWeights(estimator.name+'_'+data)
     schema.extract(estimator.name, db)
 
-    # %% SiameseTriplet
-    schema = Loader.getSchema(db, version, Estm.SiT)
+    # %% Triplet
+    schema = Loader.getSchema(db, version, Estm.Triplet)
     schema.summary()
-    schema.plot(Estm.SiT.value)
+    schema.plot(Estm.Triplet.value)
 
-    estimator = SiameseTriplet(schema.getModel())
+    estimator = Triplet(schema.getModel())
     estimator.build(db.get_shape())
     estimator.compile(loss=triplet_loss(alpha=0.2),
                       optimizer='adadelta')

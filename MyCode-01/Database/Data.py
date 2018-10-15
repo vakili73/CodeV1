@@ -41,6 +41,11 @@ Info = {
         "preproc": 255,
         "shape": (False, 32, 32, 1),
     },
+    "nist": {
+        "n_cls": 1623,
+        "preproc": None,
+        "shape": (False, 105, 105, 1),
+    },
     "pendigits": {
         "n_cls": 10,
         "preproc": None,

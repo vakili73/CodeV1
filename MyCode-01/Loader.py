@@ -31,9 +31,9 @@ def getDataset(name: str = '') -> Dataset:
 def getSchema(db: Dataset, version, estm) -> BaseSchema:
     module = __import__('Schema')
     schema = getattr(module, 'Schema'+version)()
-    if estm == Estm.CNN:
+    if estm == Estm.Conventional:
         schema.buildConvenient(db.get_shape(), db.info['n_cls'])
-    elif estm in [Estm.SiD, Estm.SiT]:
+    elif estm in [Estm.Siamese, Estm.Triplet]:
         schema.buildSiamese(db.get_shape(), db.info['n_cls'])
     return schema
 

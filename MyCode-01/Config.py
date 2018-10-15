@@ -2,9 +2,9 @@
 import enum
 
 class Estm(enum.Enum):
-    CNN = 'ConvenientNN'
-    SiD = 'SiameseDouble'
-    SiT = 'SiameseTriplet'
+    Conventional = 'Conventional'
+    Siamese = 'Siamese'
+    Triplet = 'Triplet'
 
 Conf = {
     # dataset, model
@@ -16,6 +16,7 @@ Conf = {
     # ('letter', 'V02'),
     # ('mnist', 'V01'),
     # ('nist', 'V05'),
+    # ('omniglot', 'V08'),
     # ('pendigits', 'V02'),
     # ('satimage', 'V04'),
     # ('stl10', 'V08'),
