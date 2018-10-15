@@ -1,0 +1,28 @@
+from .BaseSchema import BaseSchema
+
+from .ModelSchemaV01_1I1O import ModelSchemaV01_1I1O
+from .ModelSchemaV02_1I1O import ModelSchemaV02_1I1O
+from .ModelSchemaV03_1I1O import ModelSchemaV03_1I1O
+from .ModelSchemaV04_1I1O import ModelSchemaV04_1I1O
+from .ModelSchemaV05_1I1O import ModelSchemaV05_1I1O
+from .ModelSchemaV06_1I1O import ModelSchemaV06_1I1O
+from .ModelSchemaV07_1I1O import ModelSchemaV07_1I1O
+from .ModelSchemaV08_1I1O import ModelSchemaV08_1I1O
+
+from .ModelSchemaV01_2I1O import ModelSchemaV01_2I1O
+from .ModelSchemaV02_2I1O import ModelSchemaV02_2I1O
+from .ModelSchemaV03_2I1O import ModelSchemaV03_2I1O
+from .ModelSchemaV04_2I1O import ModelSchemaV04_2I1O
+from .ModelSchemaV05_2I1O import ModelSchemaV05_2I1O
+from .ModelSchemaV06_2I1O import ModelSchemaV06_2I1O
+from .ModelSchemaV07_2I1O import ModelSchemaV07_2I1O
+from .ModelSchemaV08_2I1O import ModelSchemaV08_2I1O
+
+from .ModelSchemaV01_3I3O import ModelSchemaV01_3I3O
+from .ModelSchemaV02_3I3O import ModelSchemaV02_3I3O
+from .ModelSchemaV03_3I3O import ModelSchemaV03_3I3O
+from .ModelSchemaV04_3I3O import ModelSchemaV04_3I3O
+from .ModelSchemaV05_3I3O import ModelSchemaV05_3I3O
+from .ModelSchemaV06_3I3O import ModelSchemaV06_3I3O
+from .ModelSchemaV07_3I3O import ModelSchemaV07_3I3O
+from .ModelSchemaV08_3I3O import ModelSchemaV08_3I3O

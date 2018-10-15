@@ -1,0 +1,35 @@
+# git ignoirng file/folder
+
+# ignore all datasets
+/*/dataset/*/*/*
+/*/dataset/*/*.txt
+/*/datasets/*/*/*
+/*/datasets/*/*.txt
+/*/database/*/*/*
+/*/database/*/*.txt
+/*/databases/*/*/*
+/*/databases/*/*.txt
+
+# ignore all feature extracted
+/*/feature
+/*/features
+
+# ignore all saved models
+/*/model
+/*/models
+
+# ignore all producible data
+/*/*.log
+/*/logs.txt
+/*/*.csv
+/*/figures
+/*/logs
+
+# python temporary files
+/*/__pycache__
+/*/*/__pycache__
+/*/dataset/*/__pycache__
+/*/datasets/*/__pycache__
+
+# my private key
+/Utils/*.h5
