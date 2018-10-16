@@ -1,6 +1,8 @@
+from .BaseGenerator import BaseGenerator
+
 import numpy as np
 
-class General():
+class General(BaseGenerator):
     def __init__(self, augment=False, allowable=[],
                  X_train: np.ndarray = np.array([]),
                  y_train: np.ndarray = np.array([]),
