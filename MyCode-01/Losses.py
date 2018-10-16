@@ -3,7 +3,21 @@ import tensorflow as tf
 from tensorflow.keras import backend as K
 
 
-def contrastive_loss(margin=1):
+def cross_entropy():
+    """
+    van der Spoel, E., Rozing, M. P., Houwing-Duistermaat, J. J., Eline Slagboom, P., Beekman, M., de Craen, A. J. M., … van Heemst, D.
+    (2015). Siamese Neural Networks for One-Shot Image Recognition.
+    ICML - Deep Learning Workshop, 7(11), 956–963. 
+    https://doi.org/10.1017/CBO9781107415324.004
+    """
+    def loss(y_true, y_pred):
+        loss = y_true*K.log(y_pred)+(1-y_true)*K.log(1-y_pred)
+        return K.mean(loss)
+
+    return loss
+
+
+def contrastive(margin=1):
     """
     Train a Siamese MLP on pairs of digits from the MNIST dataset.
     It follows Hadsell-et-al.'06 [1] by computing the Euclidean distance on the
@@ -23,7 +37,7 @@ def contrastive_loss(margin=1):
     return loss
 
 
-def triplet_loss(alpha=0.2):
+def triplet(alpha=0.2):
     """
     Implementation of the triplet loss function
     Arguments:

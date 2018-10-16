@@ -7,19 +7,20 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras import layers, Sequential
 
 
-class SchemaV06(BaseSchema):
+class SchemaV09(BaseSchema):
     def __init__(self):
-        super().__init__('SchemaV06')
+        super().__init__('SchemaV09')
         pass
 
     def buildConventional(self, shape, n_cls):
         model = self.build(shape)
-        layer01 = layers.Dense(128, activation='relu')
+        layer01 = layers.Dense(128, activation='sigmoid',
+                               kernel_regularizer=l2())
         model.add(layer01)
-        model.add(layers.Dropout(0.1))
-        model.add(layers.Dense(n_cls, activation='softmax'))
+        model.add(layers.Dense(n_cls, activation='sigmoid',
+                               kernel_regularizer=l2()))
 
-        self._add_layer_ex('dense_128_relu', layer01.output)
+        self._add_layer_ex('dense_128_sigmoid', layer01.output)
 
         self.input = model.input
         self.output = model.output
@@ -59,21 +60,28 @@ class SchemaV06(BaseSchema):
 
     def build(self, shape):
         """
-        [1] Designed by the experimental result and LeNet-5[2] inspiration
+        [1] https://github.com/Goldesel23/Siamese-Networks-for-One-Shot-Learning/blob/master/siamese_network.py
 
-        [2] Cun, Y. L., Bottou, L., Bengio, Y., & Haffiner, P. 
-            (1998). Gradient based learning applied to document recognition. 
-            Proceedings of IEEE, 86(11), 86(11):2278-2324.
+        [2] van der Spoel, E., Rozing, M. P., Houwing-Duistermaat, J. J., Eline Slagboom, P., Beekman, M., de Craen, A. J. M., … van Heemst, D.
+            (2015). Siamese Neural Networks for One-Shot Image Recognition.
+            ICML - Deep Learning Workshop, 7(11), 956–963.
+            https://doi.org/10.1017/CBO9781107415324.004
         """
         model = Sequential()
-        model.add(layers.Conv2D(16, (5, 5), input_shape=shape))
-        model.add(layers.BatchNormalization())
-        model.add(layers.Activation('relu'))
+        model.add(layers.Conv2D(64, (10, 10), activation='relu',
+                                kernel_regularizer=l2(), input_shape=shape))
         model.add(layers.MaxPooling2D())
-        model.add(layers.Conv2D(32, (3, 3), activation='relu'))
+        model.add(layers.Conv2D(128, (7, 7), activation='relu',
+                                kernel_regularizer=l2()))
         model.add(layers.MaxPooling2D())
-        model.add(layers.Dropout(0.5))
+        model.add(layers.Conv2D(128, (4, 4), activation='relu',
+                                kernel_regularizer=l2()))
+        model.add(layers.MaxPooling2D())
+        model.add(layers.Conv2D(256, (4, 4), activation='relu',
+                                kernel_regularizer=l2()))
         model.add(layers.Flatten())
+        model.add(layers.Dense(1024, activation='sigmoid',
+                               kernel_regularizer=l2()))
         return model
 
     pass

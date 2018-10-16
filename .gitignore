@@ -3,12 +3,16 @@
 # ignore all datasets
 /*/dataset/*/*/*
 /*/dataset/*/*.txt
+/*/dataset/*/*.cp
 /*/datasets/*/*/*
 /*/datasets/*/*.txt
+/*/datasets/*/*.cp
 /*/database/*/*/*
 /*/database/*/*.txt
+/*/database/*/*.cp
 /*/databases/*/*/*
 /*/databases/*/*.txt
+/*/databases/*/*.cp
 
 # ignore all feature extracted
 /*/feature

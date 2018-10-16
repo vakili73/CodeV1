@@ -7,19 +7,19 @@ from tensorflow.keras.regularizers import l2
 from tensorflow.keras import layers, Sequential
 
 
-class SchemaV06(BaseSchema):
+class SchemaV10(BaseSchema):
     def __init__(self):
-        super().__init__('SchemaV06')
+        super().__init__('SchemaV10')
         pass
 
     def buildConventional(self, shape, n_cls):
         model = self.build(shape)
-        layer01 = layers.Dense(128, activation='relu')
+        layer01 = layers.Dense(1024, activation='relu')
         model.add(layer01)
-        model.add(layers.Dropout(0.1))
+        model.add(layers.Dropout(0.5))
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self._add_layer_ex('dense_128_relu', layer01.output)
+        self._add_layer_ex('dense_1024_relu', layer01.output)
 
         self.input = model.input
         self.output = model.output
@@ -28,11 +28,11 @@ class SchemaV06(BaseSchema):
 
     def buildSiamese(self, shape):
         model = self.build(shape)
-        layer01 = layers.Dense(128, activation='sigmoid',
+        layer01 = layers.Dense(1024, activation='sigmoid',
                                kernel_regularizer=l2())
         model.add(layer01)
 
-        self._add_layer_ex('dense_128_sigmoid', layer01.output)
+        self._add_layer_ex('dense_1024_sigmoid', layer01.output)
 
         self.input = model.input
         self.output = model.output
@@ -52,27 +52,39 @@ class SchemaV06(BaseSchema):
 
         self.model = Model(inputs=[input_1, input_2], outputs=prediction)
         pass
+        
 
     def buildTriplet(self, shape):
         return NotImplemented
         pass
-
-    def build(self, shape):
+        
+    def build(self, shape):   
         """
-        [1] Designed by the experimental result and LeNet-5[2] inspiration
+        [1] Designed by the experimental result and LeNet-5[3] inspiration
 
-        [2] Cun, Y. L., Bottou, L., Bengio, Y., & Haffiner, P. 
+        [2] https://github.com/keras-team/keras/blob/master/examples/cifar10_cnn.py
+
+        [3] Cun, Y. L., Bottou, L., Bengio, Y., & Haffiner, P. 
             (1998). Gradient based learning applied to document recognition. 
             Proceedings of IEEE, 86(11), 86(11):2278-2324.
         """
         model = Sequential()
-        model.add(layers.Conv2D(16, (5, 5), input_shape=shape))
+        model.add(layers.Conv2D(16, (9, 9), input_shape=shape))
         model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
+        model.add(layers.Conv2D(16, (9, 9), activation='relu'))
         model.add(layers.MaxPooling2D())
-        model.add(layers.Conv2D(32, (3, 3), activation='relu'))
+        model.add(layers.Dropout(0.25))
+        model.add(layers.Conv2D(24, (7, 7), activation='relu'))
+        model.add(layers.Conv2D(24, (7, 7), activation='relu'))
         model.add(layers.MaxPooling2D())
-        model.add(layers.Dropout(0.5))
+        model.add(layers.Dropout(0.25))
+        model.add(layers.Conv2D(32, (5, 5)))
+        model.add(layers.BatchNormalization())
+        model.add(layers.Activation('relu'))
+        model.add(layers.Conv2D(32, (5, 5), activation='relu'))
+        model.add(layers.MaxPooling2D())
+        model.add(layers.Dropout(0.25))
         model.add(layers.Flatten())
         return model
 
