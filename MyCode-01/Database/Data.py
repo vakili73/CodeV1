@@ -66,9 +66,4 @@ Info = {
         "preproc": 255,
         "shape": (False, 32, 32, 3),
     },
-    "usps": {
-        "n_cls": 10,
-        "preproc": None,
-        "shape": (False, 16, 16, 1),
-    },
 }

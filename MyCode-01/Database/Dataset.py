@@ -56,7 +56,7 @@ class Dataset(object):
         y_train = np.array(y_train)
         X_test = np.array(X_test)
         y_test = np.array(y_test)
-        return Dataset(self.name, X_train, y_train, X_test, y_test)
+        return X_train, y_train, X_test, y_test
 
     def summary(self):
         print(self.name)
