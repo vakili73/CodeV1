@@ -24,7 +24,7 @@ def getDataset(name: str = '') -> Dataset:
     for cv in CVNAMES:
         data = pd.read_csv(DATABASE+'/'+name+'/'+cv+'.txt').values
         if cv == 'E':
-            X_test = data[:, 1:].astype('float64')
+            X_test = data[:, 1:].astype('float32')
             y_test = data[:, 0].astype('int')
         else:
             X_train = np.concatenate((X_train, data[:, 1:].astype(

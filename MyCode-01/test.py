@@ -3,4 +3,7 @@ from Loader import getDataset
 
 for dataset in Info.keys():
     print(dataset)
-    getDataset(dataset)
+    db = getDataset(dataset)
+
+    demo = db.get_data(way=5, shot=5)
+    print('')

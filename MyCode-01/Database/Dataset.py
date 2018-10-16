@@ -34,6 +34,30 @@ class Dataset(object):
     def get_shape(self):
         return self.info['shape'][1:]
 
+    def get_data(self, way=None, shot=None):
+        if way == None and shot == None:
+            return self.X_train, self.y_train, self.X_test, self.y_test
+        way = self.info['n_cls'] if way == None else way
+        shot = 1 if shot == None else shot
+        X_train = []
+        y_train = []
+        X_test = []
+        y_test = []
+        for i in range(way):
+            ind = np.where(self.y_train == i)[0]
+            X_train.extend(self.X_train[ind[0:shot]])
+            y_train.extend(self.y_train[ind[0:shot]])
+            X_test.extend(self.X_train[ind[shot:]])
+            y_test.extend(self.y_train[ind[shot:]])
+            ind = np.where(self.y_test == i)[0]
+            X_test.extend(self.X_test[ind])
+            y_test.extend(self.y_test[ind])
+        X_train = np.array(X_train)
+        y_train = np.array(y_train)
+        X_test = np.array(X_test)
+        y_test = np.array(y_test)
+        return Dataset(self.name, X_train, y_train, X_test, y_test)
+
     def summary(self):
         print(self.name)
         print(self.info)
@@ -59,7 +83,7 @@ class Dataset(object):
         train_hist_fig = _hist('train', self.y_train)
         test_hist_fig = _hist('test', self.y_test)
         return train_hist_fig, test_hist_fig
-        
+
     pass
 
 
