@@ -8,6 +8,8 @@ class BaseGenerator(object):
                  y_train: np.ndarray = np.array([]),
                  X_test: np.ndarray = np.array([]),
                  y_test: np.ndarray = np.array([])):
+        self.augment = augment
+        self.allowable = allowable
         self.X_train = X_train.copy()
         self.y_train = y_train.copy()
         self.X_test = X_test.copy()
