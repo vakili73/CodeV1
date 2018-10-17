@@ -51,11 +51,6 @@ Info = {
         "preproc": None,
         "shape": (True, 16,),
     },
-    "satimage": {
-        "n_cls": 6,
-        "preproc": None,
-        "shape": (False, 3, 3, 4),
-    },
     "stl10": {
         "n_cls": 10,
         "preproc": 255,

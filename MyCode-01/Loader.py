@@ -41,8 +41,10 @@ def getSchema(db: Dataset, version, estm) -> BaseSchema:
     schema = getattr(module, 'Schema'+version)()
     if estm == Estm.Conventional:
         schema.buildConventional(db.get_shape(), db.info['n_cls'])
-    elif estm in [Estm.Siamese, Estm.Triplet]:
+    elif estm == Estm.Siamese:
         schema.buildSiamese(db.get_shape(), db.info['n_cls'])
+    elif estm == Estm.Triplet:
+        schema.buildTriplet(db.get_shape(), db.info['n_cls'])
     return schema
 
 
@@ -51,6 +53,4 @@ if __name__ == '__main__':
     dataset = getDataset('')
     dataset = getDataset('mnist')
 
-    schema = getSchema(dataset, 'V01', Estm.CNN)
-    schema = getSchema(dataset, 'V01', Estm.SiD)
     pass

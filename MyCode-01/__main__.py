@@ -2,7 +2,7 @@
 import Utils
 import Loader
 
-from Estimator import *
+import Estimator
 
 from Config import Conf
 from Config import Estm
@@ -18,28 +18,26 @@ from Losses import cross_entropy
 
 import numpy as np
 
+from Generator import General
+
 
 # %% Main program
 
-for data, version in Conf:
-    db = Loader.getDataset(data)
-    db = Utils.preProcessing(db)
-    # db.histogram()
-    db.summary()
 
-    # %% Conventional
-    schema = Loader.getSchema(db, version, Estm.Conventional)
+def NotAugmentedRun(db, version, estm, loss, optimizer, metric=[], callback=[], verbose=1):
+    schema = Loader.getSchema(db, version, estm)
     schema.summary()
-    schema.plot(Estm.Conventional.value)
+    schema.plot(estm)
 
-    estimator = Conventional(schema.getModel())
-    estimator.compile(loss=losses.categorical_crossentropy,
-                      optimizer='adadelta',
-                      metric=['acc'])
-    history = estimator.fit(db, verbose=1,
-                            callbacks=[callbacks.EarlyStopping(patience=20)])
+    estimator = getattr(Estimator, estm)
+    estimator = estimator(schema.getModel())
+    estimator.compile(loss=loss,
+                      optimizer=optimizer,
+                      metric=metric)
+    history = estimator.fit(db, verbose=verbose,
+                            callbacks=callback)
 
-    history.plot(estimator.name+'_'+data)
+    history.plot(estimator.name+'_'+db.name+'_NotAugmented')
 
     print(estimator.evaluate(db.X_train, db.Y_train()))
     y_pred = np.argmax(estimator.predict(db.X_train), axis=-1)
@@ -49,44 +47,59 @@ for data, version in Conf:
     y_pred = np.argmax(estimator.predict(db.X_test), axis=-1)
     print(Utils.classificationReport('test', db.y_test, y_pred))
 
-    # schema.saveWeights(estimator.name+'_'+data)
-    # schema.extract(estimator.name, db)
+    Utils.rocCurve(db.name+'_'+schema.name+'_'+estimator.name+'_NotAugmented',
+                   db.Y_test(), estimator.predict(db.X_test), db.info['n_cls'])
 
-    # # %% Siamese
-    # schema = Loader.getSchema(db, version, Estm.Siamese)
-    # schema.summary()
-    # schema.plot(Estm.Siamese.value)
+    schema.saveWeights(estimator.name+'_'+db.name+'_NotAugmented')
+    schema.extract(estimator.name+'_NotAugmented', db)
 
-    # estimator = Siamese(schema.getModel())
-    # estimator.build(db.get_shape())
-    # estimator.compile(loss=contrastive(margin=1),
-    #                   optimizer='adadelta',
-    #                   metric=[metrics.mae, metrics.binary_accuracy])
-    # history = estimator.fit(db)
 
-    # history.plot(estimator.name+'_'+data)
+def AugmentedRun(db, generator, version, estm, loss, optimizer, metric=[], callback=[], verbose=1):
+    schema = Loader.getSchema(db, version, estm)
+    schema.summary()
+    schema.plot(estm)
 
-    # print(estimator.evaluate(db.X_train, db.y_train, db.info['n_cls']))
-    # print(estimator.evaluate(db.X_test, db.y_test, db.info['n_cls']))
+    estimator = getattr(Estimator, estm)
+    estimator = estimator(schema.getModel())
+    estimator.compile(loss=loss,
+                      optimizer=optimizer,
+                      metric=metric)
+    history = estimator.fit_on_batch(db, generator, verbose=verbose,
+                                     callbacks=callback)
 
-    # schema.saveWeights(estimator.name+'_'+data)
-    # schema.extract(estimator.name, db)
+    history.plot(estimator.name+'_'+db.name+'_Augmented')
 
-    # # %% Triplet
-    # schema = Loader.getSchema(db, version, Estm.Triplet)
-    # schema.summary()
-    # schema.plot(Estm.Triplet.value)
+    print(estimator.evaluate(db.X_train, db.Y_train()))
+    y_pred = np.argmax(estimator.predict(db.X_train), axis=-1)
+    print(Utils.classificationReport('train', db.y_train, y_pred))
 
-    # estimator = Triplet(schema.getModel())
-    # estimator.build(db.get_shape())
-    # estimator.compile(loss=triplet(alpha=0.2),
-    #                   optimizer='adadelta')
-    # history = estimator.fit(db)
+    print(estimator.evaluate(db.X_test, db.Y_test()))
+    y_pred = np.argmax(estimator.predict(db.X_test), axis=-1)
+    print(Utils.classificationReport('test', db.y_test, y_pred))
 
-    # history.plot(estimator.name+'_'+data)
+    Utils.rocCurve(db.name+'_'+schema.name+'_'+estimator.name+'_Augmented',
+                   db.Y_test(), estimator.predict(db.X_test), db.info['n_cls'])
 
-    # print(estimator.evaluate(db.X_train, db.y_train, db.info['n_cls']))
-    # print(estimator.evaluate(db.X_test, db.y_test, db.info['n_cls']))
+    schema.saveWeights(estimator.name+'_'+db.name+'_Augmented')
+    schema.extract(estimator.name+'_Augmented', db)
 
-    # schema.saveWeights(estimator.name+'_'+data)
-    # schema.extract(estimator.name, db)
+
+for data, version, augment in Conf:
+    db = Loader.getDataset(data)
+    db = Utils.preProcessing(db)
+    # db.histogram()
+    db.summary()
+
+    # %% Conventional
+    # NotAugmentedRun(db, version, Estm.Conventional,
+    #                 losses.categorical_crossentropy,
+    #                 optimizers.Adadelta(), ['acc'],
+    #                 [callbacks.EarlyStopping(patience=20)])
+
+    generator = General(X_train=db.X_train, y_train=db.y_train,
+                        augment=True, allowable=augment)
+    AugmentedRun(db, generator,
+                 version, Estm.Conventional,
+                 losses.categorical_crossentropy,
+                 optimizers.Adadelta(), ['acc'],
+                 [callbacks.EarlyStopping(patience=20)])

@@ -20,6 +20,9 @@ class BaseEstimator(object):
     def fit(self, *args, **kwargs) -> History:
         raise NotImplementedError
 
+    def fit_on_batch(self, *args, **kwargs) -> History:
+        raise NotImplementedError
+
     def compile(self, loss, optimizer, metric=[]):
         self.model.compile(loss=loss,
                            optimizer=optimizer,
