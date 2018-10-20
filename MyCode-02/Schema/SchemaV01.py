@@ -18,6 +18,7 @@ class SchemaV01(BaseSchema):
         model.add(layers.Dropout(0.5))
         model.add(layers.Dense(n_cls, activation='softmax'))
 
+        self.extract_layer = 'dense_128_relu'
         self.input = model.input
         self.output = model.output
         self.model = model
@@ -35,6 +36,7 @@ class SchemaV01(BaseSchema):
         model = self.build(shape)
         model.add(layers.Dense(128, activation='sigmoid'))
 
+        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = model.output
 
@@ -75,6 +77,7 @@ class SchemaV01(BaseSchema):
         model = self.build(shape)
         model.add(layers.Dense(128, activation='sigmoid'))
 
+        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = model.output
 
@@ -112,6 +115,7 @@ class SchemaV01(BaseSchema):
         model = self.build(shape)
         model.add(layers.Dense(128, activation='sigmoid'))
 
+        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = model.output
 
@@ -151,6 +155,57 @@ class SchemaV01(BaseSchema):
         softmax = layers.Activation('softmax')(concat)
 
         self.model = Model(inputs=[input_a, input_p, input_n], outputs=softmax)
+        return self
+
+    def buildTripletV2(self, shape, distance='l2'):
+        """
+        Schroff, F., Kalenichenko, D., & Philbin, J. 
+        (2015). FaceNet: A unified embedding for face recognition and clustering. 
+        In Proceedings of the IEEE Computer Society Conference on Computer Vision and Pattern Recognition (Vol. 07–12–June, pp. 815–823). 
+        https://doi.org/10.1109/CVPR.2015.7298682
+        """
+        model = self.build(shape)
+        model.add(layers.Dense(128, activation='sigmoid'))
+
+        self.extract_layer = 'dense_128_sigmoid'
+        self.input = model.input
+        self.output = model.output
+
+        input_a = layers.Input(shape=shape)
+        input_p = layers.Input(shape=shape)
+        input_n = layers.Input(shape=shape)
+
+        embedded_a = model(input_a)
+        embedded_p = model(input_p)
+        embedded_n = model(input_n)
+
+        def output_shape(input_shape):
+            return input_shape[0], 1
+
+        if distance == 'l1':
+            pos_distance_layer = layers.Lambda(
+                lambda tensors: K.sum(K.abs(tensors[0] - tensors[1]), axis=-1,
+                                      keepdims=True), output_shape=output_shape)
+            pos_distance = pos_distance_layer([embedded_a, embedded_p])
+            neg_distance_layer = layers.Lambda(
+                lambda tensors: K.sum(K.abs(tensors[0] - tensors[1]), axis=-1,
+                                      keepdims=True), output_shape=output_shape)
+            neg_distance = neg_distance_layer([embedded_a, embedded_n])
+        elif distance == 'l2':
+            pos_distance_layer = layers.Lambda(
+                lambda tensors:
+                    K.sum(K.square(tensors[0] - tensors[1]), axis=-1,
+                          keepdims=True), output_shape=output_shape)
+            pos_distance = pos_distance_layer([embedded_a, embedded_p])
+            neg_distance_layer = layers.Lambda(
+                lambda tensors:
+                    K.sum(K.square(tensors[0] - tensors[1]), axis=-1,
+                          keepdims=True), output_shape=output_shape)
+            neg_distance = neg_distance_layer([embedded_a, embedded_n])
+
+        concat = layers.Concatenate(axis=-1)([pos_distance, neg_distance])
+
+        self.model = Model(inputs=[input_a, input_p, input_n], outputs=concat)
         return self
 
     def build(self, shape):

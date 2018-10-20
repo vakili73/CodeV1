@@ -5,17 +5,19 @@ import numpy as np
 from scipy import interp
 from matplotlib import pyplot as plt
 from sklearn.metrics import roc_curve, auc
+from sklearn.decomposition import TruncatedSVD
 
 
 # %% Utils function
 
-def plot_pca_reduction(embeddings, targets):
-    raise NotImplementedError
-def plot_svd_reduction(embeddings, targets):
-    raise NotImplementedError
+def plot_pca_reduction(embeddings, targets, title):
+    X_pca = TruncatedSVD(n_components=2).fit_transform(embeddings)
+
+    plt.figure()
+    
 
 def plot_lr_curve(history, title, ylim=(0, 3), save=True,
-                 base_path='./logs/lrcurves') -> plt.Figure:
+                  base_path='./logs/lrcurves') -> plt.Figure:
     plt.figure()
     plt.title(title)
     plt.xlabel('Epoch')
@@ -37,7 +39,7 @@ def plot_lr_curve(history, title, ylim=(0, 3), save=True,
 
 
 def plot_roc_curve(title, y_test, y_score, n_cls, save=True,
-                  base_path='./logs/roccurves') -> plt.Figure:
+                   base_path='./logs/roccurves') -> plt.Figure:
     fpr = dict()
     tpr = dict()
     roc_auc = dict()

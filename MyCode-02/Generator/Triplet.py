@@ -4,7 +4,7 @@ from sklearn.utils import shuffle
 from tensorflow.keras.utils import Sequence
 
 
-class TripletV1(Sequence):
+class Triplet(Sequence):
     """
     Hoffer, E., & Ailon, N. 
     (2015). Deep metric learning using triplet network. 
