@@ -36,19 +36,15 @@ def contrastive(margin=1.25):
 
 def triplet(alpha=0.4):
     """
-    Hoffer, E., & Ailon, N. 
-    (2015). Deep metric learning using triplet network. 
-    Lecture Notes in Computer Science (Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics), 9370(2010), 84–92. 
-    https://doi.org/10.1007/978-3-319-24261-3_7
+    Schroff, F., Kalenichenko, D., & Philbin, J. 
+    (2015). FaceNet: A unified embedding for face recognition and clustering. 
+    In Proceedings of the IEEE Computer Society Conference on Computer Vision and Pattern Recognition (Vol. 07–12–June, pp. 815–823). 
+    https://doi.org/10.1109/CVPR.2015.7298682
     """
     def loss(y_true, y_pred):
         pos_dist = y_pred[:, 0]
         neg_dist = y_pred[:, 1]
-
-        basic_loss = pos_dist - neg_dist + alpha
-        # Step 4: Take the maximum of basic_loss and 0.0. Sum over the training examples.
-        loss = K.maximum(basic_loss, 0)
-
+        loss = K.maximum(pos_dist - neg_dist + alpha, 0)
         return K.mean(loss)
 
     return loss

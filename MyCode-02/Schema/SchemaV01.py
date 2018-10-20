@@ -102,8 +102,56 @@ class SchemaV01(BaseSchema):
         self.model = Model(inputs=[input_1, input_2], outputs=distance)
         return self
 
-    def buildTriplet(self, shape):
-        raise NotImplementedError
+    def buildTripletV1(self, shape, distance='l2'):
+        """
+        Hoffer, E., & Ailon, N. 
+        (2015). Deep metric learning using triplet network. 
+        Lecture Notes in Computer Science (Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics), 9370(2010), 84–92. 
+        https://doi.org/10.1007/978-3-319-24261-3_7
+        """
+        model = self.build(shape)
+        model.add(layers.Dense(128, activation='sigmoid'))
+
+        self.input = model.input
+        self.output = model.output
+
+        input_a = layers.Input(shape=shape)
+        input_p = layers.Input(shape=shape)
+        input_n = layers.Input(shape=shape)
+
+        embedded_a = model(input_a)
+        embedded_p = model(input_p)
+        embedded_n = model(input_n)
+
+        def output_shape(input_shape):
+            return input_shape[0], 1
+
+        if distance == 'l1':
+            pos_distance_layer = layers.Lambda(
+                lambda tensors: K.sum(K.abs(tensors[0] - tensors[1]), axis=-1,
+                                      keepdims=True), output_shape=output_shape)
+            pos_distance = pos_distance_layer([embedded_a, embedded_p])
+            neg_distance_layer = layers.Lambda(
+                lambda tensors: K.sum(K.abs(tensors[0] - tensors[1]), axis=-1,
+                                      keepdims=True), output_shape=output_shape)
+            neg_distance = neg_distance_layer([embedded_a, embedded_n])
+        elif distance == 'l2':
+            pos_distance_layer = layers.Lambda(
+                lambda tensors: K.sqrt(
+                    K.sum(K.square(tensors[0] - tensors[1]), axis=-1,
+                          keepdims=True)), output_shape=output_shape)
+            pos_distance = pos_distance_layer([embedded_a, embedded_p])
+            neg_distance_layer = layers.Lambda(
+                lambda tensors: K.sqrt(
+                    K.sum(K.square(tensors[0] - tensors[1]), axis=-1,
+                          keepdims=True)), output_shape=output_shape)
+            neg_distance = neg_distance_layer([embedded_a, embedded_n])
+
+        concat = layers.Concatenate(axis=-1)([pos_distance, neg_distance])
+        softmax = layers.Activation('softmax')(concat)
+
+        self.model = Model(inputs=[input_a, input_p, input_n], outputs=softmax)
+        return self
 
     def build(self, shape):
         """
