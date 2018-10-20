@@ -4,17 +4,83 @@ import numpy as np
 
 from scipy import interp
 from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from sklearn.metrics import roc_curve, auc
-from sklearn.decomposition import TruncatedSVD
+
+from sklearn.manifold import LocallyLinearEmbedding
+from sklearn.decomposition import TruncatedSVD, PCA
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 
 # %% Utils function
 
-def plot_pca_reduction(embeddings, targets, title):
-    X_pca = TruncatedSVD(n_components=2).fit_transform(embeddings)
+def plot_lle_reduction(embeddings, targets, title, save=True,
+                       base_path='./logs/pcaplots') -> plt.Figure:
+    X = LocallyLinearEmbedding(n_components=3).fit_transform(embeddings)
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    for i in range(len(np.unique(targets))):
+        ind = np.where(targets == i)[0]
+        ax.scatter(X[ind, 0], X[ind, 1], X[ind, 2])
+    plt.title(title)
+    if save:
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
+        path = base_path+'/'+title+'.png'
+        plt.savefig(path)
+    return plt.gcf()
 
-    plt.figure()
-    
+
+def plot_pca_reduction(embeddings, targets, title, save=True,
+                       base_path='./logs/pcaplots') -> plt.Figure:
+    X = PCA(n_components=3).fit_transform(embeddings)
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    for i in range(len(np.unique(targets))):
+        ind = np.where(targets == i)[0]
+        ax.scatter(X[ind, 0], X[ind, 1], X[ind, 2])
+    plt.title(title)
+    if save:
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
+        path = base_path+'/'+title+'.png'
+        plt.savefig(path)
+    return plt.gcf()
+
+
+def plot_lsa_reduction(embeddings, targets, title, save=True,
+                       base_path='./logs/pcaplots') -> plt.Figure:
+    X = TruncatedSVD(n_components=3).fit_transform(embeddings)
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    for i in range(len(np.unique(targets))):
+        ind = np.where(targets == i)[0]
+        ax.scatter(X[ind, 0], X[ind, 1], X[ind, 2])
+    plt.title(title)
+    if save:
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
+        path = base_path+'/'+title+'.png'
+        plt.savefig(path)
+    return plt.gcf()
+
+
+def plot_lda_reduction(embeddings, targets, title, save=True,
+                       base_path='./logs/pcaplots') -> plt.Figure:
+    X = LinearDiscriminantAnalysis(n_components=3).fit_transform(embeddings, targets)
+    fig = plt.figure()
+    ax = Axes3D(fig)
+    for i in range(len(np.unique(targets))):
+        ind = np.where(targets == i)[0]
+        ax.scatter(X[ind, 0], X[ind, 1], X[ind, 2])
+    plt.title(title)
+    if save:
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
+        path = base_path+'/'+title+'.png'
+        plt.savefig(path)
+    return plt.gcf()
+
 
 def plot_lr_curve(history, title, ylim=(0, 3), save=True,
                   base_path='./logs/lrcurves') -> plt.Figure:
