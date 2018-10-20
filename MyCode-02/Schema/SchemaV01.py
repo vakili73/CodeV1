@@ -63,6 +63,45 @@ class SchemaV01(BaseSchema):
         self.model = Model(inputs=[input_1, input_2], outputs=prediction)
         return self
 
+    def buildSiameseV2(self, shape, distance='l2'):
+        """
+        The model used in [1]. Which uses the function of cross-entropy. It is assumed that 1 for the same and 0 for different images.
+
+        [1] van der Spoel, E., Rozing, M. P., Houwing-Duistermaat, J. J., Eline Slagboom, P., Beekman, M., de Craen, A. J. M., … van Heemst, D. 
+            (2015). Siamese Neural Networks for One-Shot Image Recognition.
+            ICML - Deep Learning Workshop, 7(11), 956–963. 
+            https://doi.org/10.1017/CBO9781107415324.004
+        """
+        model = self.build(shape)
+        model.add(layers.Dense(128, activation='sigmoid'))
+
+        self.input = model.input
+        self.output = model.output
+
+        input_1 = layers.Input(shape=shape)
+        input_2 = layers.Input(shape=shape)
+
+        embedded_1 = model(input_1)
+        embedded_2 = model(input_2)
+
+        def output_shape(input_shape):
+            return input_shape[0], 1
+
+        if distance == 'l1':
+            distance_layer = layers.Lambda(
+                lambda tensors: K.sum(K.abs(tensors[0] - tensors[1]), axis=-1,
+                                      keepdims=True), output_shape=output_shape)
+            distance = distance_layer([embedded_1, embedded_2])
+        elif distance == 'l2':
+            distance_layer = layers.Lambda(
+                lambda tensors: K.sqrt(
+                    K.sum(K.square(tensors[0] - tensors[1]), axis=-1,
+                          keepdims=True)), output_shape=output_shape)
+            distance = distance_layer([embedded_1, embedded_2])
+
+        self.model = Model(inputs=[input_1, input_2], outputs=distance)
+        return self
+
     def buildTriplet(self, shape):
         raise NotImplementedError
 
