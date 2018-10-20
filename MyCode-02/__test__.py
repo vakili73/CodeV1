@@ -16,7 +16,7 @@ X_train, X_test, y_train, y_test = Utils.laod_data('mnist')
 X_train = Utils.reshape(X_train / 255.0, shape)
 X_test = Utils.reshape(X_test / 255.0, shape)
 
-schema = SchemaV01().buildTriplet(shape)
+schema = SchemaV01().buildTripletV1(shape)
 
 n_cls = CONFIG['mnist']['n_cls']
 generator = TripletV1(X_train, y_train, n_cls)
