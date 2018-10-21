@@ -14,26 +14,30 @@ class SchemaV04(BaseSchema):
 
     def buildConventional(self, shape, n_cls):
         model = self.build(shape)
-        layer01 = layers.Dense(128, activation='relu')
-        model.add(layer01)
-        model.add(layers.Dropout(0.3))
+        layer = layers.Dense(128, activation='sigmoid')
+        model.add(layer)
+        model.add(layers.Dropout(0.5))
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self._add_layer_ex('dense_128_relu', layer01.output)
-
+        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
-        self.output = model.output
+        self.output = layer
         self.model = model
-        pass
+        return self
 
-    def buildSiamese(self, shape):
+    def buildSiameseV1(self, shape, distance='l1'):
+        """
+        The model used in [1]. Which uses the function of cross-entropy. It is assumed that 1 for the same and 0 for different images.
+
+        [1] van der Spoel, E., Rozing, M. P., Houwing-Duistermaat, J. J., Eline Slagboom, P., Beekman, M., de Craen, A. J. M., … van Heemst, D. 
+            (2015). Siamese Neural Networks for One-Shot Image Recognition.
+            ICML - Deep Learning Workshop, 7(11), 956–963. 
+            https://doi.org/10.1017/CBO9781107415324.004
+        """
         model = self.build(shape)
-        layer01 = layers.Dense(128, kernel_regularizer=l2(),
-                               activation='sigmoid')
-        model.add(layer01)
+        model.add(layers.Dense(128, activation='sigmoid'))
 
-        self._add_layer_ex('dense_128_sigmoid', layer01.output)
-
+        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = model.output
 
@@ -43,44 +47,192 @@ class SchemaV04(BaseSchema):
         embedded_1 = model(input_1)
         embedded_2 = model(input_2)
 
-        l1_distance_layer = layers.Lambda(
-            lambda tensors: K.abs(tensors[0] - tensors[1]))
-        l1_distance = l1_distance_layer([embedded_1, embedded_2])
+        def output_shape(input_shape):
+            return input_shape
 
-        prediction = layers.Dense(1, kernel_regularizer=l2(),
-                                  activation='sigmoid')(l1_distance)
+        if distance == 'l1':
+            distance_layer = layers.Lambda(
+                lambda tensors: K.abs(tensors[0] - tensors[1]),
+                output_shape=output_shape)
+            distance = distance_layer([embedded_1, embedded_2])
+        elif distance == 'l2':
+            distance_layer = layers.Lambda(
+                lambda tensors: K.square(tensors[0] - tensors[1]),
+                output_shape=output_shape)
+            distance = distance_layer([embedded_1, embedded_2])
+
+        prediction = layers.Dense(1, activation='sigmoid')(distance)
 
         self.model = Model(inputs=[input_1, input_2], outputs=prediction)
-        pass
+        return self
 
-    def buildTriplet(self, shape):
-        return NotImplemented
-        pass
+    def buildSiameseV2(self, shape, distance='l2'):
+        """
+        Which uses the function of contrastive. It is assumed that 0 for the same and 1 for different images.
+
+        [1] van der Spoel, E., Rozing, M. P., Houwing-Duistermaat, J. J., Eline Slagboom, P., Beekman, M., de Craen, A. J. M., … van Heemst, D. 
+            (2015). Siamese Neural Networks for One-Shot Image Recognition.
+            ICML - Deep Learning Workshop, 7(11), 956–963. 
+            https://doi.org/10.1017/CBO9781107415324.004
+        """
+        model = self.build(shape)
+        model.add(layers.Dense(128, activation='sigmoid'))
+
+        self.extract_layer = 'dense_128_sigmoid'
+        self.input = model.input
+        self.output = model.output
+
+        input_1 = layers.Input(shape=shape)
+        input_2 = layers.Input(shape=shape)
+
+        embedded_1 = model(input_1)
+        embedded_2 = model(input_2)
+
+        def output_shape(input_shape):
+            return input_shape[0], 1
+
+        if distance == 'l1':
+            distance_layer = layers.Lambda(
+                lambda tensors: K.sum(K.abs(tensors[0] - tensors[1]), axis=-1,
+                                      keepdims=True), output_shape=output_shape)
+            distance = distance_layer([embedded_1, embedded_2])
+        elif distance == 'l2':
+            distance_layer = layers.Lambda(
+                lambda tensors: K.sqrt(
+                    K.sum(K.square(tensors[0] - tensors[1]), axis=-1,
+                          keepdims=True)), output_shape=output_shape)
+            distance = distance_layer([embedded_1, embedded_2])
+
+        self.model = Model(inputs=[input_1, input_2], outputs=distance)
+        return self
+
+    def buildTripletV1(self, shape, distance='l2'):
+        """
+        Hoffer, E., & Ailon, N. 
+        (2015). Deep metric learning using triplet network. 
+        Lecture Notes in Computer Science (Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics), 9370(2010), 84–92. 
+        https://doi.org/10.1007/978-3-319-24261-3_7
+        """
+        model = self.build(shape)
+        model.add(layers.Dense(128, activation='sigmoid'))
+
+        self.extract_layer = 'dense_128_sigmoid'
+        self.input = model.input
+        self.output = model.output
+
+        input_a = layers.Input(shape=shape)
+        input_p = layers.Input(shape=shape)
+        input_n = layers.Input(shape=shape)
+
+        embedded_a = model(input_a)
+        embedded_p = model(input_p)
+        embedded_n = model(input_n)
+
+        def output_shape(input_shape):
+            return input_shape[0], 1
+
+        if distance == 'l1':
+            pos_distance_layer = layers.Lambda(
+                lambda tensors: K.sum(K.abs(tensors[0] - tensors[1]), axis=-1,
+                                      keepdims=True), output_shape=output_shape)
+            pos_distance = pos_distance_layer([embedded_a, embedded_p])
+            neg_distance_layer = layers.Lambda(
+                lambda tensors: K.sum(K.abs(tensors[0] - tensors[1]), axis=-1,
+                                      keepdims=True), output_shape=output_shape)
+            neg_distance = neg_distance_layer([embedded_a, embedded_n])
+        elif distance == 'l2':
+            pos_distance_layer = layers.Lambda(
+                lambda tensors: K.sqrt(
+                    K.sum(K.square(tensors[0] - tensors[1]), axis=-1,
+                          keepdims=True)), output_shape=output_shape)
+            pos_distance = pos_distance_layer([embedded_a, embedded_p])
+            neg_distance_layer = layers.Lambda(
+                lambda tensors: K.sqrt(
+                    K.sum(K.square(tensors[0] - tensors[1]), axis=-1,
+                          keepdims=True)), output_shape=output_shape)
+            neg_distance = neg_distance_layer([embedded_a, embedded_n])
+
+        concat = layers.Concatenate(axis=-1)([pos_distance, neg_distance])
+        softmax = layers.Activation('softmax')(concat)
+
+        self.model = Model(inputs=[input_a, input_p, input_n], outputs=softmax)
+        return self
+
+    def buildTripletV2(self, shape, distance='l2'):
+        """
+        Schroff, F., Kalenichenko, D., & Philbin, J. 
+        (2015). FaceNet: A unified embedding for face recognition and clustering. 
+        In Proceedings of the IEEE Computer Society Conference on Computer Vision and Pattern Recognition (Vol. 07–12–June, pp. 815–823). 
+        https://doi.org/10.1109/CVPR.2015.7298682
+        """
+        model = self.build(shape)
+        model.add(layers.Dense(128, activation='sigmoid'))
+
+        self.extract_layer = 'dense_128_sigmoid'
+        self.input = model.input
+        self.output = model.output
+
+        input_a = layers.Input(shape=shape)
+        input_p = layers.Input(shape=shape)
+        input_n = layers.Input(shape=shape)
+
+        embedded_a = model(input_a)
+        embedded_p = model(input_p)
+        embedded_n = model(input_n)
+
+        def output_shape(input_shape):
+            return input_shape[0], 1
+
+        if distance == 'l1':
+            pos_distance_layer = layers.Lambda(
+                lambda tensors: K.sum(K.abs(tensors[0] - tensors[1]), axis=-1,
+                                      keepdims=True), output_shape=output_shape)
+            pos_distance = pos_distance_layer([embedded_a, embedded_p])
+            neg_distance_layer = layers.Lambda(
+                lambda tensors: K.sum(K.abs(tensors[0] - tensors[1]), axis=-1,
+                                      keepdims=True), output_shape=output_shape)
+            neg_distance = neg_distance_layer([embedded_a, embedded_n])
+        elif distance == 'l2':
+            pos_distance_layer = layers.Lambda(
+                lambda tensors:
+                    K.sum(K.square(tensors[0] - tensors[1]), axis=-1,
+                          keepdims=True), output_shape=output_shape)
+            pos_distance = pos_distance_layer([embedded_a, embedded_p])
+            neg_distance_layer = layers.Lambda(
+                lambda tensors:
+                    K.sum(K.square(tensors[0] - tensors[1]), axis=-1,
+                          keepdims=True), output_shape=output_shape)
+            neg_distance = neg_distance_layer([embedded_a, embedded_n])
+
+        concat = layers.Concatenate(axis=-1)([pos_distance, neg_distance])
+
+        self.model = Model(inputs=[input_a, input_p, input_n], outputs=concat)
+        return self
 
     def build(self, shape):
         """
-        [1] https://github.com/ajgallego/Clustering-based-k-Nearest-Neighbor/blob/master/utilKerasModels.py
+        [1] Designed by the experimental result and LeNet-5[3] inspiration
 
-        [2] Gallego, A.-J., Calvo-Zaragoza, J., Valero-Mas, J. J., & Rico-Juan, J. R. 
-            (2017). Clustering-based k-Nearest Neighbor Classification for Large-Scale Data with Neural Codes Representation.
-            Pattern Recognition, 74, 531–543. 
-            https://doi.org/10.1016/j.patcog.2017.09.038
+        [2] https://github.com/keras-team/keras/blob/master/examples/cifar10_cnn.py
+
+        [3] Cun, Y. L., Bottou, L., Bengio, Y., & Haffiner, P. 
+            (1998). Gradient based learning applied to document recognition. 
+            Proceedings of IEEE, 86(11), 86(11):2278-2324.
         """
         model = Sequential()
-        model.add(layers.Conv2D(64, (1, 1), activation='relu',
-                                input_shape=shape))
-        model.add(layers.UpSampling2D())
-        model.add(layers.Dropout(0.3))
-        model.add(layers.Conv2D(64, (2, 2), activation='relu'))
-        model.add(layers.UpSampling2D())
-        model.add(layers.Dropout(0.3))
-        model.add(layers.Conv2D(64, (2, 2), activation='relu'))
+        model.add(layers.Conv2D(32, (3, 3), padding='same', input_shape=shape))
+        model.add(layers.BatchNormalization())
+        model.add(layers.Activation('relu'))
+        model.add(layers.Conv2D(32, (3, 3), activation='relu'))
         model.add(layers.MaxPooling2D())
-        model.add(layers.UpSampling2D())
-        model.add(layers.Dropout(0.3))
+        model.add(layers.Dropout(0.25))
+        model.add(layers.Conv2D(64, (3, 3), padding='same', activation='relu'))
+        model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+        model.add(layers.MaxPooling2D())
+        model.add(layers.Dropout(0.25))
         model.add(layers.Flatten())
-        model.add(layers.Dense(256, activation='relu'))
-        model.add(layers.Dropout(0.3))
+        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dropout(0.5))
         return model
 
     pass

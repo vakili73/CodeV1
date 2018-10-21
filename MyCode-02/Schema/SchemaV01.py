@@ -14,13 +14,14 @@ class SchemaV01(BaseSchema):
 
     def buildConventional(self, shape, n_cls):
         model = self.build(shape)
-        model.add(layers.Dense(128, activation='sigmoid'))
+        layer = layers.Dense(128, activation='sigmoid')
+        model.add(layer)
         model.add(layers.Dropout(0.5))
         model.add(layers.Dense(n_cls, activation='softmax'))
 
         self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
-        self.output = model.output
+        self.output = layer
         self.model = model
         return self
 
