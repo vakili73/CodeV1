@@ -14,11 +14,11 @@ class SchemaV01(BaseSchema):
 
     def buildConventional(self, shape, n_cls):
         model = self.build(shape)
-        model.add(layers.Dense(128, activation='relu'))
+        model.add(layers.Dense(128, activation='sigmoid'))
         model.add(layers.Dropout(0.5))
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self.extract_layer = 'dense_128_relu'
+        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = model.output
         self.model = model
@@ -67,7 +67,7 @@ class SchemaV01(BaseSchema):
 
     def buildSiameseV2(self, shape, distance='l2'):
         """
-        The model used in [1]. Which uses the function of cross-entropy. It is assumed that 1 for the same and 0 for different images.
+        Which uses the function of contrastive. It is assumed that 0 for the same and 1 for different images.
 
         [1] van der Spoel, E., Rozing, M. P., Houwing-Duistermaat, J. J., Eline Slagboom, P., Beekman, M., de Craen, A. J. M., … van Heemst, D. 
             (2015). Siamese Neural Networks for One-Shot Image Recognition.
