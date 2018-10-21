@@ -12,7 +12,7 @@ class BaseSchema(object):
         self.model: Model = Model()
         pass
 
-    def build(self, *args, **kwargs):
+    def build(self, *args, **kwargs) -> Model:
         raise NotImplementedError
 
     def getModel(self) -> Model:

@@ -1,10 +1,16 @@
 import os
 import numpy as np
 
+from Schema import BaseSchema
 from tensorflow.keras.utils import plot_model
 
 
 # %% Utils function
+
+def load_schema(version: str) -> BaseSchema:
+    module = __import__('Schema')
+    schema = getattr(module, 'Schema'+version)()
+    return schema
 
 def plot_schema(model, title, show_shapes=True,
                 show_layer_names=False, rankdir='TB',
