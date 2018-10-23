@@ -4,26 +4,32 @@ METHOD = {
     # K: keras, L: local
     'ConventionalV1': {
         'loss': 'K-categorical_crossentropy',
+        'metrics': ['acc'],
         'dategen': 'Original',
     },
     'ConventionalV2': {
         'loss': 'K-categorical_crossentropy',
+        'metrics': ['acc'],
         'datagen': 'Original',
     },
     'SiameseV1': {
         'loss': 'L-cross_entropy',
+        'metrics': ['acc'],
         'datagen': 'SiameseV1',
     },
     'SiameseV2': {
         'loss': 'L-contrastive',
+        'metrics': ['acc'],
         'datagen': 'SiameseV2',
     },
     'TripletV1': {
         'loss': 'K-mean_squared_error',
+        'metrics': ['acc'],
         'datagen': 'Triplet',
     },
     'TripletV2': {
         'loss': 'L-triplet',
+        'metrics': ['acc'],
         'datagen': 'Triplet',
     },
 }

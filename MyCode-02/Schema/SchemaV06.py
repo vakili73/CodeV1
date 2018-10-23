@@ -38,7 +38,7 @@ class SchemaV06(BaseSchema):
         self.model = model
         return self
 
-    def buildSiameseV1(self, shape, distance='l1'):
+    def buildSiameseV1(self, shape, n_cls, distance='l1'):
         """
         The model used in [1]. Which uses the function of cross-entropy. It is assumed that 1 for the same and 0 for different images.
 
@@ -79,7 +79,7 @@ class SchemaV06(BaseSchema):
         self.model = Model(inputs=[input_1, input_2], outputs=prediction)
         return self
 
-    def buildSiameseV2(self, shape, distance='l2'):
+    def buildSiameseV2(self, shape, n_cls, distance='l2'):
         """
         Which uses the function of contrastive. It is assumed that 0 for the same and 1 for different images.
 
@@ -119,7 +119,7 @@ class SchemaV06(BaseSchema):
         self.model = Model(inputs=[input_1, input_2], outputs=distance)
         return self
 
-    def buildTripletV1(self, shape, distance='l2'):
+    def buildTripletV1(self, shape, n_cls, distance='l2'):
         """
         Hoffer, E., & Ailon, N. 
         (2015). Deep metric learning using triplet network. 
@@ -171,7 +171,7 @@ class SchemaV06(BaseSchema):
         self.model = Model(inputs=[input_a, input_p, input_n], outputs=softmax)
         return self
 
-    def buildTripletV2(self, shape, distance='l2'):
+    def buildTripletV2(self, shape, n_cls, distance='l2'):
         """
         Schroff, F., Kalenichenko, D., & Philbin, J. 
         (2015). FaceNet: A unified embedding for face recognition and clustering. 

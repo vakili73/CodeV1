@@ -2,6 +2,9 @@
 from Runs import MethodNN
 from Runs import MethodKNN
 
+from Utils import plot_lr_curve
+from Utils import plot_reduction
+
 from Config import KNN
 from Config import CONFIG
 from Config import METHOD
@@ -43,8 +46,15 @@ for dataset, schema, dgen_opt in CONFIG:
 
             # Run without augmentation
             loop_method = loop_fewshot+'_'+name+'_'+detail['loss']
-            embed_train, embed_test = MethodNN(*db, shape, schema, detail, dgen_opt,
-                                               optimizer, callbacks, False, loop_method)
+            embed_train, embed_test, history = MethodNN(
+                name, *db, shape, schema, detail, dgen_opt, epochs,
+                batch_size, optimizer, callbacks, False, loop_method)
+            plot_lr_curve(history, loop_method)
+            plot_reduction(embeddings=embed_train,
+                           targets=y_train, title=loop_method+'_train')
+            plot_reduction(embeddings=embed_test, targets=y_test,
+                           title=loop_method+'_test')
+
             for weights, n_neighbors in KNN:
                 loop_knn = loop_method + \
                     '_KNN_{}W_{}N'.format(weights, n_neighbors)

@@ -1,4 +1,5 @@
 import os
+import _pickle
 import itertools
 import numpy as np
 
@@ -17,7 +18,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 
 def plot_pca_reduction(embeddings, targets, title, save=True,
-                       base_path='./logs/pcaplots') -> plt.Figure:
+                       base_path='./logs/vizplots') -> plt.Figure:
     X = PCA(n_components=3).fit_transform(embeddings)
     fig = plt.figure()
     ax = Axes3D(fig)
@@ -28,13 +29,13 @@ def plot_pca_reduction(embeddings, targets, title, save=True,
     if save:
         if not os.path.exists(base_path):
             os.makedirs(base_path)
-        path = base_path+'/'+title+'.png'
+        path = base_path+'/'+title+'_pca.png'
         plt.savefig(path)
     return plt.gcf()
 
 
 def plot_lsa_reduction(embeddings, targets, title, save=True,
-                       base_path='./logs/pcaplots') -> plt.Figure:
+                       base_path='./logs/vizplots') -> plt.Figure:
     X = TruncatedSVD(n_components=3).fit_transform(embeddings)
     fig = plt.figure()
     ax = Axes3D(fig)
@@ -45,13 +46,13 @@ def plot_lsa_reduction(embeddings, targets, title, save=True,
     if save:
         if not os.path.exists(base_path):
             os.makedirs(base_path)
-        path = base_path+'/'+title+'.png'
+        path = base_path+'/'+title+'_lsa.png'
         plt.savefig(path)
     return plt.gcf()
 
 
 def plot_lda_reduction(embeddings, targets, title, save=True,
-                       base_path='./logs/pcaplots') -> plt.Figure:
+                       base_path='./logs/vizplots') -> plt.Figure:
     X = LinearDiscriminantAnalysis(n_components=3).fit_transform(embeddings, targets)
     fig = plt.figure()
     ax = Axes3D(fig)
@@ -62,9 +63,15 @@ def plot_lda_reduction(embeddings, targets, title, save=True,
     if save:
         if not os.path.exists(base_path):
             os.makedirs(base_path)
-        path = base_path+'/'+title+'.png'
+        path = base_path+'/'+title+'_lda.png'
         plt.savefig(path)
     return plt.gcf()
+
+
+def plot_reduction(**kwargs):
+    plot_lda_reduction(**kwargs)
+    plot_lsa_reduction(**kwargs)
+    plot_pca_reduction(**kwargs)
 
 
 def plot_lr_curve(history, title, ylim=(0, 3), save=True,
@@ -86,6 +93,8 @@ def plot_lr_curve(history, title, ylim=(0, 3), save=True,
             os.makedirs(base_path)
         path = base_path+'/'+title+'.png'
         plt.gcf().savefig(path)
+        path = base_path+'/'+title+'.cp'
+        _pickle.dump(history, open(path, 'wb'))
     return plt.gcf()
 
 
