@@ -2,7 +2,7 @@
 CVNAMES = ['A', 'B', 'C', 'D', 'E']
 DATABASE = './Database'
 
-CONFIG = {
+INFO = {
     # shape: (rows, cols, channel)
     "cifar10": {
         "n_cls": 10,

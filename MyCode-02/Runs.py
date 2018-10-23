@@ -14,6 +14,11 @@ from sklearn.neighbors import KNeighborsClassifier
 
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
+def MethodNN():
+    raise NotImplementedError
+
+def MethodKNN():
+    raise NotImplementedError
 
 def MethodCNN(db, shot, n_cls, shape, schema, dgen_opt, X_train, X_test,
               y_train, y_test, epochs, optimizer, callbacks, batch_size=128):

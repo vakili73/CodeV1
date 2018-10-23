@@ -1,13 +1,32 @@
 
-METHOD = [
-    # name, loss, dgen
-    ('CNNSIGM', 'L.', 'Original'),
-    ('CNNRELU', 'K.', 'Original'),
-    ('SIAMEV1', '', ''),
-    ('SIAMEV2', '', ''),
-    ('TRIPLV1', '', ''),
-    ('TRIPLV2', '', ''),
-]
+METHOD = {
+    # name, loss
+    # K: keras, L: local
+    'ConventionalV1': {
+        'loss': 'K-categorical_crossentropy',
+        'dategen': 'Original',
+    },
+    'ConventionalV2': {
+        'loss': 'K-categorical_crossentropy',
+        'datagen': 'Original',
+    },
+    'SiameseV1': {
+        'loss': 'L-cross_entropy',
+        'datagen': 'SiameseV1',
+    },
+    'SiameseV2': {
+        'loss': 'L-contrastive',
+        'datagen': 'SiameseV2',
+    },
+    'TripletV1': {
+        'loss': 'K-mean_squared_error',
+        'datagen': 'Triplet',
+    },
+    'TripletV2': {
+        'loss': 'L-triplet',
+        'datagen': 'Triplet',
+    },
+}
 
 KNN = [
     # weights, n_neighbors

@@ -1,1 +1,1 @@
-from .Config import CONFIG
+from .Config import INFO

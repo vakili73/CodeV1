@@ -12,7 +12,20 @@ class SchemaV06(BaseSchema):
         super().__init__('SchemaV06')
         pass
 
-    def buildConventional(self, shape, n_cls):
+    def buildConventionalV1(self, shape, n_cls):
+        model = self.build(shape)
+        layer = layers.Dense(128, activation='relu')
+        model.add(layer)
+        model.add(layers.Dropout(0.5))
+        model.add(layers.Dense(n_cls, activation='softmax'))
+
+        self.extract_layer = 'dense_128_relu'
+        self.input = model.input
+        self.output = layer.output
+        self.model = model
+        return self
+
+    def buildConventionalV2(self, shape, n_cls):
         model = self.build(shape)
         layer = layers.Dense(128, activation='sigmoid')
         model.add(layer)
