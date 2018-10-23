@@ -2,15 +2,17 @@
 METHOD = {
     # name, loss
     # K: keras, L: local
-    'ConventionalV1': {
-        'loss': 'K-categorical_crossentropy',
-        'metrics': ['acc'],
-        'dategen': 'Original',
-    },
+    # 'ConventionalV1': {
+    #     'loss': 'K-categorical_crossentropy',
+    #     'metrics': ['acc'],
+    #     'datagen': 'Original',
+    #     'classification': '',
+    # },
     'ConventionalV2': {
         'loss': 'K-categorical_crossentropy',
         'metrics': ['acc'],
         'datagen': 'Original',
+        'classification': '',
     },
     'SiameseV1': {
         'loss': 'L-cross_entropy',
@@ -37,20 +39,20 @@ METHOD = {
 KNN = [
     # weights, n_neighbors
     ('uniform', 1),
-    ('uniform', 3),
-    ('uniform', 5),
-    ('uniform', 7),
-    ('uniform', 9),
-    ('distance', 1),
-    ('distance', 3),
-    ('distance', 5),
-    ('distance', 7),
-    ('distance', 9),
+    # ('uniform', 3),
+    # ('uniform', 5),
+    # ('uniform', 7),
+    # ('uniform', 9),
+    # ('distance', 1),
+    # ('distance', 3),
+    # ('distance', 5),
+    # ('distance', 7),
+    # ('distance', 9),
 ]
 
 FEWSHOT = [
     # shot, way
-    (None, -1),
+    # (None, -1),
     (1, -1),
     (5, -1),
     (15, -1),

@@ -74,7 +74,7 @@ def plot_reduction(**kwargs):
     plot_pca_reduction(**kwargs)
 
 
-def plot_lr_curve(history, title, ylim=(0, 3), save=True,
+def plot_lr_curve(history, title, ylim=(0, 2.5), save=True,
                   base_path='./logs/lrcurves') -> plt.Figure:
     plt.figure()
     plt.title(title)
@@ -94,7 +94,7 @@ def plot_lr_curve(history, title, ylim=(0, 3), save=True,
         path = base_path+'/'+title+'.png'
         plt.gcf().savefig(path)
         path = base_path+'/'+title+'.cp'
-        _pickle.dump(history, open(path, 'wb'))
+        _pickle.dump(history.history, open(path, 'wb'))
     return plt.gcf()
 
 
