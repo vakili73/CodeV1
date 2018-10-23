@@ -15,22 +15,6 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 # %% Utils function
 
-def plot_lle_reduction(embeddings, targets, title, save=True,
-                       base_path='./logs/pcaplots') -> plt.Figure:
-    X = LocallyLinearEmbedding(n_components=3).fit_transform(embeddings)
-    fig = plt.figure()
-    ax = Axes3D(fig)
-    for i in range(len(np.unique(targets))):
-        ind = np.where(targets == i)[0]
-        ax.scatter(X[ind, 0], X[ind, 1], X[ind, 2])
-    plt.title(title)
-    if save:
-        if not os.path.exists(base_path):
-            os.makedirs(base_path)
-        path = base_path+'/'+title+'.png'
-        plt.savefig(path)
-    return plt.gcf()
-
 
 def plot_pca_reduction(embeddings, targets, title, save=True,
                        base_path='./logs/pcaplots') -> plt.Figure:

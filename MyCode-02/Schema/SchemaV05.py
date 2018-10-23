@@ -21,7 +21,7 @@ class SchemaV05(BaseSchema):
 
         self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
-        self.output = layer
+        self.output = layer.output
         self.model = model
         return self
 

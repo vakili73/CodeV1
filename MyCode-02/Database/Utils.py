@@ -12,7 +12,7 @@ from matplotlib import pyplot as plt
 
 # %% Utils function
 
-def laod_data(db_name) -> tuple:
+def load_data(db_name) -> tuple:
     if os.path.exists(DATABASE+'/'+db_name+'/Full.cp'):
         fileObj = open(DATABASE+'/'+db_name+'/Full.cp', 'rb')
         X_train, X_test, y_train, y_test = _pickle.load(fileObj)
@@ -40,24 +40,22 @@ def get_fewshot(X_train, X_test,
     if shot == None:
         return X_train, X_test, y_train, y_test
     way = len(np.unique(y_train)) if way == -1 else way
-    X_train = []
-    X_test = []
-    y_train = []
-    y_test = []
+    _X_train = []
+    _X_test = []
+    _y_train = []
+    _y_test = []
     for i in range(way):
         ind = np.where(y_train == i)[0]
-        X_train.extend(X_train[ind[0:shot]])
-        y_train.extend(y_train[ind[0:shot]])
-        X_test.extend(X_train[ind[shot:]])
-        y_test.extend(y_train[ind[shot:]])
+        _X_train.extend(X_train[ind[0:shot]])
+        _y_train.extend(y_train[ind[0:shot]])
         ind = np.where(y_test == i)[0]
-        X_test.extend(X_test[ind])
-        y_test.extend(y_test[ind])
-    X_train = np.array(X_train)
-    X_test = np.array(X_test)
-    y_train = np.array(y_train)
-    y_test = np.array(y_test)
-    return X_train, X_test, y_train, y_test
+        _X_test.extend(X_test[ind])
+        _y_test.extend(y_test[ind])
+    _X_train = np.array(_X_train)
+    _X_test = np.array(_X_test)
+    _y_train = np.array(_y_train)
+    _y_test = np.array(_y_test)
+    return _X_train, _X_test, _y_train, _y_test
 
 
 def reshape(X, shape) -> tuple:

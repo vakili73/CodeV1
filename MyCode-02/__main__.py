@@ -16,7 +16,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 
 for db, mdl, dgen_opt in RunCONFIG:
 
-    print('dataset: %s,\t model: %s' % (db, mdl))
+    print('dataset: %s, model: %s' % (db, mdl))
 
     n_cls = DbCONFIG[db]['n_cls']
     shape = DbCONFIG[db]['shape']
@@ -25,7 +25,7 @@ for db, mdl, dgen_opt in RunCONFIG:
     print('datagen opt')
     print(dgen_opt)
 
-    X_train, X_test, y_train, y_test = DbUtils.laod_data('mnist')
+    X_train, X_test, y_train, y_test = DbUtils.laod_data(db)
     print('Data histogram plotting...')
     DbUtils.plot_histogram(y_train, db+'_train')
     DbUtils.plot_histogram(y_test, db+'_test')
@@ -36,7 +36,7 @@ for db, mdl, dgen_opt in RunCONFIG:
     schema = ScUtils.load_schema(mdl)
 
     optimizer = 'adadelta'
-    callbacks = EarlyStopping(patience=10)
+    callbacks = [EarlyStopping(patience=10)]
     epochs = 1000
 
     for shot, way in FewShotCONFIG:
