@@ -34,7 +34,7 @@ class Triplet(Sequence):
             batch.append((self.x[self.indices[anchor][a_index]],
                           self.x[self.indices[positive][p_index]],
                           self.x[self.indices[negetive][n_index]],
-                          np.array([0, 1])))
+                          np.array([0., 1.])))
         anchor, positive, negetive, output = zip(*batch)
         return [np.stack(anchor), np.stack(positive), np.stack(negetive)], np.stack(output)
 

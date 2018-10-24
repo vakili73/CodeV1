@@ -23,11 +23,14 @@ from tensorflow.keras.callbacks import EarlyStopping
 
 # %% Main Program
 
-optimizer = 'adadelta'
-callbacks = [EarlyStopping(patience=10)]
-batch_size = 128
-epochs = 1000
-n_jobs = 8
+n_jobs = 4
+options = {
+    'optimizer': 'adadelta',
+    'callbacks': [EarlyStopping(patience=10)],
+    'batch_size': 128,
+    'epochs': 1000,
+    'verbose': 1,
+}
 
 for dataset, schema, dgen_opt in CONFIG:
     loop_data = dataset+'_Schema'+schema
@@ -57,8 +60,7 @@ for dataset, schema, dgen_opt in CONFIG:
             # Run without augmentation
             loop_method = loop_fewshot+'_'+name
             embed_train, embed_test, history = MethodNN(
-                name, *db, shape, schema, detail, dgen_opt, epochs,
-                batch_size, optimizer, callbacks, False, loop_method)
+                name, *db, shape, schema, detail, dgen_opt, False, loop_method, **options)
             plot_lr_curve(history, loop_method)
             plot_reduction(embeddings=embed_train,
                            targets=y_train, title=loop_method+'_train')
@@ -75,8 +77,7 @@ for dataset, schema, dgen_opt in CONFIG:
             if shot != None or dataset == 'omniglot':
                 loop_method = loop_fewshot+'_'+name+'_Augmented'
                 embed_train, embed_test, history = MethodNN(
-                    name, *db, shape, schema, detail, dgen_opt, epochs,
-                    batch_size, optimizer, callbacks, True, loop_method)
+                    name, *db, shape, schema, detail, dgen_opt, False, loop_method, **options)
                 plot_lr_curve(history, loop_method)
                 plot_reduction(embeddings=embed_train,
                                targets=y_train, title=loop_method+'_train')

@@ -59,7 +59,7 @@ class AugTriplet(Sequence):
             if negetive_x.shape[0] < self.batch_size:
                 negetive_x = self._fix_batch(negetive_x, negetive_generator)
             batch = [anchor_x, positive_x, negetive_x], np.array(
-                [[0, 1]]).repeat(self.batch_size, axis=0)
+                [[0., 1.]]).repeat(self.batch_size, axis=0)
             break
         return batch
 

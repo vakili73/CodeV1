@@ -44,7 +44,7 @@ def report_classification(y_true, y_score, n_cls, title):
 
 
 def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detail,
-             dgen_opt, epochs, batch_size, optimizer, callbacks, augment, prefix):
+             dgen_opt, augment, prefix, optimizer, callbacks, batch_size, epochs, verbose):
     schema = load_schema(schema)
     getattr(schema, 'build'+name)(shape, n_cls)
     print(prefix)
@@ -70,11 +70,12 @@ def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detai
 
         history = schema.model.fit_generator(traingen, epochs=epochs,
                                              validation_data=validgen,
-                                             callbacks=callbacks)
+                                             callbacks=callbacks,
+                                             verbose=verbose)
     else:
         if detail['datagen'].lower() == 'original':
             history = schema.model.fit(X_train, to_categorical(y_train, n_cls), epochs=epochs,
-                                       batch_size=batch_size, callbacks=callbacks,
+                                       batch_size=batch_size, callbacks=callbacks, verbose=verbose,
                                        validation_data=(X_test, to_categorical(y_test, n_cls)))
         else:
             datagen = load_datagen(detail['datagen'])
@@ -83,7 +84,8 @@ def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detai
 
             history = schema.model.fit_generator(traingen, epochs=epochs,
                                                  validation_data=validgen,
-                                                 callbacks=callbacks)
+                                                 callbacks=callbacks,
+                                                 verbose=verbose)
 
     save_weights(schema.model, prefix)
 

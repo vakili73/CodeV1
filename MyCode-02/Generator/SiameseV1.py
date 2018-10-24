@@ -28,10 +28,10 @@ class SiameseV1(Sequence):
             o_index = np.random.randint(self.min_len[other])
             a_index = np.random.randint(self.min_len[anchor])
             batch.append((self.x[self.indices[other][o_index]],
-                          self.x[self.indices[anchor][a_index]], 0))
+                          self.x[self.indices[anchor][a_index]], 0.))
             a_index = np.random.randint(self.min_len[anchor], size=2)
             batch.append((self.x[self.indices[anchor][a_index[0]]],
-                          self.x[self.indices[anchor][a_index[1]]], 1))
+                          self.x[self.indices[anchor][a_index[1]]], 1.))
         in_1, in_2, out = zip(*batch)
         return [np.stack(in_1), np.stack(in_2)], np.stack(out)
 

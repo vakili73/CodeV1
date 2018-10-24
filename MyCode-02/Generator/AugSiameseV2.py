@@ -52,7 +52,8 @@ class AugSiameseV2(Sequence):
                 anchor_x = self._fix_batch(anchor_x, anchor_generator)
             if other_x.shape[0] < self.batch_size//2:
                 other_x = self._fix_batch(other_x, other_generator)
-            batch.append((anchor_x, other_x, np.ones((self.batch_size//2))))
+            batch.append((anchor_x, other_x, np.ones(
+                (self.batch_size//2), dtype=np.float)))
             break
         for (anchor_x1, _), (anchor_x2, _) in zip(
                 anchor_generator, anchor_generator):
@@ -60,7 +61,8 @@ class AugSiameseV2(Sequence):
                 anchor_x1 = self._fix_batch(anchor_x1, anchor_generator)
             if anchor_x2.shape[0] < self.batch_size//2:
                 anchor_x2 = self._fix_batch(anchor_x2, anchor_generator)
-            batch.append((anchor_x1, anchor_x2, np.zeros((self.batch_size//2))))
+            batch.append((anchor_x1, anchor_x2, np.zeros(
+                (self.batch_size//2), dtype=np.float)))
             break
         in_1, in_2, out = zip(*batch)
         return [np.concatenate(in_1), np.concatenate(in_2)], np.concatenate(out)
@@ -74,5 +76,3 @@ class AugSiameseV2(Sequence):
                                           self.y[self.indices[i]],
                                           batch_size=self.batch_size//2)
             self.generators.append(generator)
-
-
