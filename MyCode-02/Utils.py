@@ -11,7 +11,6 @@ from mpl_toolkits.mplot3d import Axes3D
 from sklearn.metrics import roc_curve, auc
 from sklearn.manifold import LocallyLinearEmbedding
 from sklearn.decomposition import TruncatedSVD, PCA
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
 
 # %% Utils function
@@ -51,25 +50,7 @@ def plot_lsa_reduction(embeddings, targets, title, save=True,
     return plt.gcf()
 
 
-def plot_lda_reduction(embeddings, targets, title, save=True,
-                       base_path='./logs/vizplots') -> plt.Figure:
-    X = LinearDiscriminantAnalysis(n_components=3).fit_transform(embeddings, targets)
-    fig = plt.figure()
-    ax = Axes3D(fig)
-    for i in range(len(np.unique(targets))):
-        ind = np.where(targets == i)[0]
-        ax.scatter(X[ind, 0], X[ind, 1], X[ind, 2])
-    plt.title(title)
-    if save:
-        if not os.path.exists(base_path):
-            os.makedirs(base_path)
-        path = base_path+'/'+title+'_lda.png'
-        plt.savefig(path)
-    return plt.gcf()
-
-
 def plot_reduction(**kwargs):
-    plot_lda_reduction(**kwargs)
     plot_lsa_reduction(**kwargs)
     plot_pca_reduction(**kwargs)
 

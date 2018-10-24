@@ -23,13 +23,13 @@ def load_loss(loss: str):
     if loss.startswith('K-'):
         loss = getattr(losses, loss[2:])
     elif loss.startswith('L-'):
-        module = __import__('import Losses')
+        module = __import__('Losses')
         loss = getattr(module, loss[2:])()
     return loss
 
 
 def load_datagen(datagen):
-    module = __import__('import Generator')
+    module = __import__('Generator')
     datagen = getattr(module, datagen)
     return datagen
 
@@ -37,9 +37,8 @@ def load_datagen(datagen):
 def report_classification(y_true, y_score, n_cls, title):
     print(title)
     y_pred = np.argmax(y_score, axis=-1)
-    print(classification_report(y_true, y_pred, labels=range(n_cls),
-                                digits=5))
-    plot_roc_curve(title, to_categorical(y_true), y_score, n_cls)
+    print(classification_report(y_true, y_pred, digits=5))
+    plot_roc_curve(title, to_categorical(y_true, n_cls), y_score, n_cls)
     cm = confusion_matrix(y_true, y_pred)
     plot_confusion_matrix(cm, title, np.unique(y_true))
 
@@ -56,14 +55,13 @@ def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detai
     loss = load_loss(detail['loss'])
     schema.model.compile(loss=loss, optimizer=optimizer,
                          metrics=detail['metrics'])
-
     if augment:
         if detail['datagen'].lower() == 'original':
             datagen = ImageDataGenerator(**dgen_opt)
             datagen.fit(X_train)
-            traingen = datagen.flow(X_train, to_categorical(y_train),
+            traingen = datagen.flow(X_train, to_categorical(y_train, n_cls),
                                     batch_size=batch_size)
-            validgen = datagen.flow(X_test, to_categorical(y_test),
+            validgen = datagen.flow(X_test, to_categorical(y_test, n_cls),
                                     batch_size=batch_size)
         else:
             datagen = load_datagen('Aug'+detail['datagen'])
@@ -75,9 +73,9 @@ def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detai
                                              callbacks=callbacks)
     else:
         if detail['datagen'].lower() == 'original':
-            history = schema.model.fit(X_train, to_categorical(y_train), epochs=epochs,
+            history = schema.model.fit(X_train, to_categorical(y_train, n_cls), epochs=epochs,
                                        batch_size=batch_size, callbacks=callbacks,
-                                       validation_data=(X_test, to_categorical(y_test)))
+                                       validation_data=(X_test, to_categorical(y_test, n_cls)))
         else:
             datagen = load_datagen(detail['datagen'])
             traingen = datagen(X_train, y_train, n_cls, batch_size)
@@ -86,12 +84,6 @@ def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detai
             history = schema.model.fit_generator(traingen, epochs=epochs,
                                                  validation_data=validgen,
                                                  callbacks=callbacks)
-
-    print(schema.model.metrics_names)
-    print('train performance')
-    print(schema.model.evaluate(X_train, to_categorical(y_train)))
-    print('test performance')
-    print(schema.model.evaluate(X_test, to_categorical(y_test)))
 
     save_weights(schema.model, prefix)
 
