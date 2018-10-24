@@ -234,7 +234,7 @@ class SchemaV05(BaseSchema):
         """
         model = Sequential()
         model.add(layers.Conv2D(16, (9, 9), input_shape=shape))
-        model.add(layers.BatchNormalization())
+        # model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.Conv2D(16, (9, 9), activation='relu'))
         model.add(layers.MaxPooling2D())
@@ -244,7 +244,7 @@ class SchemaV05(BaseSchema):
         model.add(layers.MaxPooling2D())
         model.add(layers.Dropout(0.25))
         model.add(layers.Conv2D(32, (5, 5)))
-        model.add(layers.BatchNormalization())
+        # model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.Conv2D(32, (5, 5), activation='relu'))
         model.add(layers.MaxPooling2D())

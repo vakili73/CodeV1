@@ -232,8 +232,9 @@ class SchemaV02(BaseSchema):
             https://doi.org/10.1016/j.patcog.2017.09.038
         """
         model = Sequential()
-        model.add(layers.Conv2D(256, (3, 3), activation='relu',
-                                input_shape=shape))
+        model.add(layers.Conv2D(256, (3, 3), input_shape=shape))
+        # model.add(layers.BatchNormalization())
+        model.add(layers.Activation('relu'))
         model.add(layers.MaxPooling2D())
         model.add(layers.Dropout(0.2))
         model.add(layers.Conv2D(128, (3, 3), activation='relu'))
@@ -241,7 +242,9 @@ class SchemaV02(BaseSchema):
         model.add(layers.Dropout(0.2))
         model.add(layers.Conv2D(128, (3, 3), activation='relu'))
         model.add(layers.Dropout(0.2))
-        model.add(layers.Conv2D(64, (3, 3), activation='relu'))
+        model.add(layers.Conv2D(64, (3, 3)))
+        # model.add(layers.BatchNormalization())
+        model.add(layers.Activation('relu'))
         model.add(layers.Dropout(0.2))
         model.add(layers.Flatten())
         model.add(layers.Dense(512, activation='relu'))

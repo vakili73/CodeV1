@@ -29,7 +29,7 @@ options = {
     'callbacks': [EarlyStopping(patience=10)],
     'batch_size': 128,
     'epochs': 1000,
-    'verbose': 1,
+    'verbose': 2,
 }
 
 for dataset, schema, dgen_opt in CONFIG:

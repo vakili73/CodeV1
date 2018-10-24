@@ -232,7 +232,7 @@ class SchemaV03(BaseSchema):
         """
         model = Sequential()
         model.add(layers.Conv2D(16, (5, 5), input_shape=shape))
-        model.add(layers.BatchNormalization())
+        # model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.MaxPooling2D())
         model.add(layers.Conv2D(32, (3, 3), activation='relu'))
