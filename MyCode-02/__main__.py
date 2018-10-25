@@ -23,13 +23,15 @@ from tensorflow.keras.callbacks import EarlyStopping
 
 # %% Main Program
 
-n_jobs = 4
+n_jobs = 6
 options = {
     'optimizer': 'adadelta',
     'callbacks': [EarlyStopping(patience=10)],
     'batch_size': 128,
     'epochs': 1000,
-    'verbose': 2,
+    'verbose': 2, 
+    'use_multiprocessing': True,
+    'workers': 6,
 }
 
 for dataset, schema, dgen_opt in CONFIG:

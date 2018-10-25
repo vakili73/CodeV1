@@ -9,7 +9,7 @@ class BaseSchema(object):
         self.name = name
         self.input = NotImplemented
         self.output = NotImplemented
-        self.model: Model = Model()
+        self.model = Model()
         pass
 
     def build(self, *args, **kwargs) -> Model:

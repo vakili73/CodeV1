@@ -3,6 +3,7 @@ from .BaseSchema import BaseSchema
 
 from tensorflow.keras import Model
 from tensorflow.keras import backend as K
+from tensorflow.keras.backend import epsilon
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras import layers, Sequential
 
@@ -113,7 +114,7 @@ class SchemaV05(BaseSchema):
             distance_layer = layers.Lambda(
                 lambda tensors: K.sqrt(
                     K.sum(K.square(tensors[0] - tensors[1]), axis=-1,
-                          keepdims=True)), output_shape=output_shape)
+                          keepdims=True) + epsilon()), output_shape=output_shape)
             distance = distance_layer([embedded_1, embedded_2])
 
         self.model = Model(inputs=[input_1, input_2], outputs=distance)
@@ -234,7 +235,7 @@ class SchemaV05(BaseSchema):
         """
         model = Sequential()
         model.add(layers.Conv2D(16, (9, 9), input_shape=shape))
-        # model.add(layers.BatchNormalization())
+        model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.Conv2D(16, (9, 9), activation='relu'))
         model.add(layers.MaxPooling2D())
@@ -244,7 +245,7 @@ class SchemaV05(BaseSchema):
         model.add(layers.MaxPooling2D())
         model.add(layers.Dropout(0.25))
         model.add(layers.Conv2D(32, (5, 5)))
-        # model.add(layers.BatchNormalization())
+        model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.Conv2D(32, (5, 5), activation='relu'))
         model.add(layers.MaxPooling2D())

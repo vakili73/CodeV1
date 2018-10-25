@@ -44,7 +44,8 @@ def report_classification(y_true, y_score, n_cls, title):
 
 
 def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detail,
-             dgen_opt, augment, prefix, optimizer, callbacks, batch_size, epochs, verbose):
+             dgen_opt, augment, prefix, optimizer, callbacks, batch_size, epochs,
+             verbose, use_multiprocessing, workers):
     schema = load_schema(schema)
     getattr(schema, 'build'+name)(shape, n_cls)
     print(prefix)
@@ -68,10 +69,9 @@ def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detai
             traingen = datagen(X_train, y_train, n_cls, dgen_opt, batch_size)
             validgen = datagen(X_test, y_test, n_cls, dgen_opt, batch_size)
 
-        history = schema.model.fit_generator(traingen, epochs=epochs,
-                                             validation_data=validgen,
-                                             callbacks=callbacks,
-                                             verbose=verbose)
+        history = schema.model.fit_generator(
+            traingen, epochs=epochs, validation_data=validgen, callbacks=callbacks,
+            verbose=verbose, workers=workers, use_multiprocessing=use_multiprocessing)
     else:
         if detail['datagen'].lower() == 'original':
             history = schema.model.fit(X_train, to_categorical(y_train, n_cls), epochs=epochs,
@@ -82,11 +82,10 @@ def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detai
             traingen = datagen(X_train, y_train, n_cls, batch_size)
             validgen = datagen(X_test, y_test, n_cls, batch_size)
 
-            history = schema.model.fit_generator(traingen, epochs=epochs,
-                                                 validation_data=validgen,
-                                                 callbacks=callbacks,
-                                                 verbose=verbose)
-
+            history = schema.model.fit_generator(
+                traingen, epochs=epochs, validation_data=validgen, callbacks=callbacks,
+                verbose=verbose, workers=workers, use_multiprocessing=use_multiprocessing)
+                
     save_weights(schema.model, prefix)
 
     embed_train = schema.getModel().predict(X_train)

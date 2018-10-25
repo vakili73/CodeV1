@@ -2,23 +2,23 @@
 METHOD = {
     # name, loss
     # K: keras, L: local
-    # 'ConventionalV1': {
-    #     'loss': 'K-categorical_crossentropy',
-    #     'metrics': ['acc'],
-    #     'datagen': 'Original',
-    #     'classification': '',
-    # },
-    # 'ConventionalV2': {
-    #     'loss': 'K-categorical_crossentropy',
-    #     'metrics': ['acc'],
-    #     'datagen': 'Original',
-    #     'classification': '',
-    # },
-    # 'SiameseV1': {
-    #     'loss': 'L-cross_entropy',
-    #     'metrics': ['acc'],
-    #     'datagen': 'SiameseV1',
-    # },
+    'ConventionalV1': {
+        'loss': 'K-categorical_crossentropy',
+        'metrics': ['acc'],
+        'datagen': 'Original',
+        'classification': '',
+    },
+    'ConventionalV2': {
+        'loss': 'K-categorical_crossentropy',
+        'metrics': ['acc'],
+        'datagen': 'Original',
+        'classification': '',
+    },
+    'SiameseV1': {
+        'loss': 'L-cross_entropy',
+        'metrics': ['acc'],
+        'datagen': 'SiameseV1',
+    },
     'SiameseV2': {
         'loss': 'L-contrastive',
         'metrics': ['acc'],
