@@ -21,7 +21,7 @@ def plot_pca_reduction(embeddings, targets, title, save=True,
                        base_path='./logs/vizplots') -> plt.Figure:
     X = PCA(n_components=3).fit_transform(embeddings)
     plt.clf()
-    plt.set_size_inches(*figsize)
+    plt.gcf().set_size_inches(*figsize)
     fig = plt.gcf()
     ax = Axes3D(fig)
     for i in range(len(np.unique(targets))):
@@ -40,7 +40,7 @@ def plot_lsa_reduction(embeddings, targets, title, save=True,
                        base_path='./logs/vizplots') -> plt.Figure:
     X = TruncatedSVD(n_components=3).fit_transform(embeddings)
     plt.clf()
-    plt.set_size_inches(*figsize)
+    plt.gcf().set_size_inches(*figsize)
     fig = plt.gcf()
     ax = Axes3D(fig)
     for i in range(len(np.unique(targets))):
@@ -63,7 +63,7 @@ def plot_reduction(**kwargs):
 def plot_lr_curve(history, title, ylim=(0, 2.5), save=True,
                   base_path='./logs/lrcurves') -> plt.Figure:
     plt.clf()
-    plt.set_size_inches(*figsize)
+    plt.gcf().set_size_inches(*figsize)
     plt.title(title)
     plt.xlabel('Epoch')
     plt.ylabel('Loss Value')
@@ -115,6 +115,7 @@ def plot_roc_curve(title, y_test, y_score, n_cls, save=True,
 
     # Plot all ROC curves
     plt.clf()
+    plt.gcf().set_size_inches(*figsize)
     plt.title(title)
     plt.plot(fpr["micro"], tpr["micro"],
              label='micro-average ROC curve (area = {0:0.2f})'
@@ -149,7 +150,7 @@ def plot_confusion_matrix(cm, title, classes, save=True, normalize=True,
         print('Confusion matrix, without normalization')
 
     plt.clf()
-    plt.set_size_inches(*figsize)
+    plt.gcf().set_size_inches(*figsize)
     plt.imshow(cm, interpolation='nearest')
     plt.title(title)
     plt.colorbar()
