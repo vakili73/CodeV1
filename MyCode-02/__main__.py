@@ -1,4 +1,5 @@
 import re
+import Reporter
 
 from Runs import MethodNN
 from Runs import MethodKNN
@@ -22,6 +23,7 @@ from sklearn.utils import shuffle
 from tensorflow.keras.callbacks import EarlyStopping
 
 # %% Main Program
+rpt = Reporter.Reporter()
 
 n_jobs = 6
 options = {
@@ -61,6 +63,7 @@ for dataset, schema, dgen_opt in CONFIG:
 
             # Run without augmentation
             loop_method = loop_fewshot+'_'+name
+            rpt.write_stack(dataset, schema, name, way, shot, False)
             embed_train, embed_test, history = MethodNN(
                 name, *db, shape, schema, detail, dgen_opt, False, loop_method, **options)
             plot_lr_curve(history, loop_method)
@@ -72,12 +75,14 @@ for dataset, schema, dgen_opt in CONFIG:
             for weights, n_neighbors in KNN:
                 loop_knn = loop_method + \
                     '_KNN_{}_{}N'.format(weights, n_neighbors)
-                MethodKNN(embed_train, embed_test, y_train, y_test,
+                MethodKNN(rpt, embed_train, embed_test, y_train, y_test,
                           n_cls, weights, n_neighbors, n_jobs, loop_knn)
+            rpt.end_line()
 
             # Run with data augmentation
             if shot != None or dataset == 'omniglot':
                 loop_method = loop_fewshot+'_'+name+'_Augmented'
+                rpt.write_stack(dataset, schema, name, way, shot, True)
                 embed_train, embed_test, history = MethodNN(
                     name, *db, shape, schema, detail, dgen_opt, False, loop_method, **options)
                 plot_lr_curve(history, loop_method)
@@ -89,5 +94,8 @@ for dataset, schema, dgen_opt in CONFIG:
                 for weights, n_neighbors in KNN:
                     loop_knn = loop_method + \
                         '_KNN_{}_{}N'.format(weights, n_neighbors)
-                    MethodKNN(embed_train, embed_test, y_train, y_test,
+                    MethodKNN(rpt, embed_train, embed_test, y_train, y_test,
                               n_cls, weights, n_neighbors, n_jobs, loop_knn)
+                rpt.end_line()
+rpt.flush()
+rpt.close()

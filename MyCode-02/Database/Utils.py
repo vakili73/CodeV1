@@ -9,6 +9,8 @@ import seaborn as sns
 
 from matplotlib import pyplot as plt
 
+figsize = (19.20, 10.80)
+
 
 # %% Utils function
 
@@ -70,7 +72,8 @@ def reshape(X, shape) -> tuple:
 def plot_histogram(y, title, save=True,
                    base_path='./logs/datahists') -> plt.Figure:
     unique, counts = np.unique(y, return_counts=True)
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(7, 5), sharex=True)
+    plt.clf()
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=figsize, sharex=True)
     fig.suptitle(title)
     y = counts - np.mean(counts)
     sns.barplot(x=unique, y=y, palette="deep", ax=ax1)

@@ -10,6 +10,7 @@ from Schema.Utils import plot_schema
 from Schema.Utils import save_weights
 from Schema.Utils import save_feature
 
+from sklearn import metrics
 from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 from sklearn.neighbors import KNeighborsClassifier
@@ -85,7 +86,7 @@ def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detai
             history = schema.model.fit_generator(
                 traingen, epochs=epochs, validation_data=validgen, callbacks=callbacks,
                 verbose=verbose, workers=workers, use_multiprocessing=use_multiprocessing)
-                
+
     save_weights(schema.model, prefix)
 
     embed_train = schema.getModel().predict(X_train)
@@ -105,7 +106,7 @@ def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detai
     return embed_train, embed_test, history
 
 
-def MethodKNN(X_train, X_test, y_train, y_test, n_cls,
+def MethodKNN(rpt, X_train, X_test, y_train, y_test, n_cls,
               weights, n_neighbors, n_jobs, prefix):
     def _method_knn(X_data, y_data, title):
         clf = KNeighborsClassifier(
@@ -113,5 +114,9 @@ def MethodKNN(X_train, X_test, y_train, y_test, n_cls,
         clf.fit(X_train, y_train)
         y_score = clf.predict_proba(X_data)
         report_classification(y_data, y_score, n_cls, title)
+        y_pred = np.argmax(y_score, axis=-1)
+        accu_score = metrics.accuracy_score(y_data, y_pred)
+        f1_score = metrics.f1_score(y_data, y_pred, average='weighted')
+        rpt.write_knn_metrics(weights, n_neighbors, accu_score, f1_score)
     # _method_knn(X_train, y_train, prefix+'_train')
     _method_knn(X_test, y_test, prefix+'_test')
