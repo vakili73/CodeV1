@@ -15,19 +15,6 @@ class SchemaV02(BaseSchema):
 
     def buildConventionalV1(self, shape, n_cls):
         model = self.build(shape)
-        layer = layers.Dense(128, activation='relu')
-        model.add(layer)
-        model.add(layers.Dropout(0.1))
-        model.add(layers.Dense(n_cls, activation='softmax'))
-
-        self.extract_layer = 'dense_128_relu'
-        self.input = model.input
-        self.output = layer.output
-        self.model = model
-        return self
-
-    def buildConventionalV2(self, shape, n_cls):
-        model = self.build(shape)
         layer = layers.Dense(128, activation='sigmoid')
         model.add(layer)
         model.add(layers.Dropout(0.1))
@@ -84,10 +71,9 @@ class SchemaV02(BaseSchema):
         """
         Which uses the function of contrastive. It is assumed that 0 for the same and 1 for different images.
 
-        [1] van der Spoel, E., Rozing, M. P., Houwing-Duistermaat, J. J., Eline Slagboom, P., Beekman, M., de Craen, A. J. M., … van Heemst, D. 
-            (2015). Siamese Neural Networks for One-Shot Image Recognition.
-            ICML - Deep Learning Workshop, 7(11), 956–963. 
-            https://doi.org/10.1017/CBO9781107415324.004
+        [1] Hadsell R, Chopra S, LeCun Y. 
+            Dimensionality reduction by learning an invariant mapping. 
+            Innull 2006 Jun 17 (pp. 1735-1742). IEEE.
         """
         model = self.build(shape)
         model.add(layers.Dense(128, activation='sigmoid'))
@@ -238,17 +224,23 @@ class SchemaV02(BaseSchema):
         model.add(layers.Activation('relu'))
         model.add(layers.MaxPooling2D())
         model.add(layers.Dropout(0.2))
-        model.add(layers.Conv2D(128, (3, 3), activation='relu'))
+        model.add(layers.Conv2D(128, (3, 3)))
+        model.add(layers.BatchNormalization())
+        model.add(layers.Activation('relu'))
         model.add(layers.MaxPooling2D())
         model.add(layers.Dropout(0.2))
-        model.add(layers.Conv2D(128, (3, 3), activation='relu'))
+        model.add(layers.Conv2D(128, (3, 3)))
+        model.add(layers.BatchNormalization())
+        model.add(layers.Activation('relu'))
         model.add(layers.Dropout(0.2))
         model.add(layers.Conv2D(64, (3, 3)))
         model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.Dropout(0.2))
         model.add(layers.Flatten())
-        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dense(512))
+        model.add(layers.BatchNormalization())
+        model.add(layers.Activation('relu'))
         model.add(layers.Dropout(0.1))
         model.add(layers.Dense(256, activation='relu'))
         model.add(layers.Dropout(0.1))

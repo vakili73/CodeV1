@@ -8,12 +8,6 @@ METHOD = {
         'datagen': 'Original',
         'classification': '',
     },
-    'ConventionalV2': {
-        'loss': 'K-categorical_crossentropy',
-        'metrics': ['acc'],
-        'datagen': 'Original',
-        'classification': '',
-    },
     'SiameseV1': {
         'loss': 'L-cross_entropy',
         'metrics': ['acc'],
@@ -39,14 +33,10 @@ METHOD = {
 KNN = [
     # weights, n_neighbors
     ('uniform', 1),
-    ('uniform', 3),
-    ('uniform', 5),
-    ('uniform', 7),
-    ('uniform', 9),
     ('distance', 3),
-    ('distance', 5),
+    ('uniform', 5),
     ('distance', 7),
-    ('distance', 9),
+    # ('uniform', 9),
 ]
 
 FEWSHOT = [
@@ -54,10 +44,8 @@ FEWSHOT = [
     (None, -1),
     (5, -1),
     (15, -1),
-    (5, 5),
-    (15, 5),
-    (5, 10),
-    (15, 10),
+    # (5, 5),
+    # (15, 5),
 ]
 
 _DATAGEN_OPT_COLORED_IMAGE = {
@@ -80,9 +68,9 @@ _DATAGEN_OPT_BW_IMAGE = {
 
 CONFIG = [
     # dataset, schema, dgen_opt
-    ('cifar10', 'V04', _DATAGEN_OPT_COLORED_IMAGE),
-    ('cifar100', 'V04', _DATAGEN_OPT_COLORED_IMAGE),
-    ('fashion', 'V03', {
+    ('cifar10', 'V03', _DATAGEN_OPT_COLORED_IMAGE),
+    ('cifar100', 'V03', _DATAGEN_OPT_COLORED_IMAGE),
+    ('fashion', 'V01', {
         'rotation_range': 15,
         'width_shift_range': 0.15,
         'height_shift_range': 0.15,
@@ -93,7 +81,7 @@ CONFIG = [
     ('homus', 'V02', _DATAGEN_OPT_BW_IMAGE),
     ('mnist', 'V01', _DATAGEN_OPT_BW_IMAGE),
     ('nist', 'V02', _DATAGEN_OPT_BW_IMAGE),
-    ('omniglot', 'V06', _DATAGEN_OPT_BW_IMAGE),
-    ('stl10', 'V05', _DATAGEN_OPT_COLORED_IMAGE),
-    ('svhn', 'V04', _DATAGEN_OPT_COLORED_IMAGE),
+    ('omniglot', 'V04', _DATAGEN_OPT_BW_IMAGE),
+    ('stl10', 'V04', _DATAGEN_OPT_COLORED_IMAGE),
+    ('svhn', 'V03', _DATAGEN_OPT_COLORED_IMAGE),
 ]

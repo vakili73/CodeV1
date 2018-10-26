@@ -28,7 +28,7 @@ def contrastive(margin=1.25):
     """
     def loss(y_true, y_pred):
         loss = (1 - y_true) * K.square(y_pred) + y_true * \
-            K.square(K.maximum(0., margin - y_pred))
+            K.square(K.maximum(0.0, margin - y_pred))
         return K.mean(loss)
 
     return loss
@@ -44,7 +44,7 @@ def triplet(alpha=0.4):
     def loss(y_true, y_pred):
         pos_dist = y_pred[:, 0]
         neg_dist = y_pred[:, 1]
-        loss = K.maximum(pos_dist - neg_dist + alpha, 0)
+        loss = K.maximum(pos_dist - neg_dist + alpha, 0.0)
         return K.mean(loss)
 
     return loss

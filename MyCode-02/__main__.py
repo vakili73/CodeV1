@@ -26,7 +26,7 @@ from tensorflow.keras.callbacks import EarlyStopping
 n_jobs = 6
 options = {
     'optimizer': 'adadelta',
-    'callbacks': [EarlyStopping(patience=10)],
+    'callbacks': [EarlyStopping(patience=50)],
     'batch_size': 128,
     'epochs': 1000,
     'verbose': 2, 
