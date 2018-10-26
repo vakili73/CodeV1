@@ -113,5 +113,5 @@ def MethodKNN(X_train, X_test, y_train, y_test, n_cls,
         clf.fit(X_train, y_train)
         y_score = clf.predict_proba(X_data)
         report_classification(y_data, y_score, n_cls, title)
-    _method_knn(X_train, y_train, prefix+'_train')
+    # _method_knn(X_train, y_train, prefix+'_train')
     _method_knn(X_test, y_test, prefix+'_test')
