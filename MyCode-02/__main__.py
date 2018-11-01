@@ -80,22 +80,22 @@ for dataset, schema, dgen_opt in CONFIG:
             rpt.end_line()
 
             # Run with data augmentation
-            if shot != None or dataset == 'omniglot':
-                loop_method = loop_fewshot+'_'+name+'_Augmented'
-                rpt.write_stack(dataset, schema, name, way, shot, True)
-                embed_train, embed_test, history = MethodNN(
-                    name, *db, shape, schema, detail, dgen_opt, False, loop_method, **options)
-                plot_lr_curve(history, loop_method)
-                plot_reduction(embeddings=embed_train,
-                               targets=y_train, title=loop_method+'_train')
-                plot_reduction(embeddings=embed_test, targets=y_test,
-                               title=loop_method+'_test')
+            # if shot != None or dataset == 'omniglot':
+            #     loop_method = loop_fewshot+'_'+name+'_Augmented'
+            #     rpt.write_stack(dataset, schema, name, way, shot, True)
+            #     embed_train, embed_test, history = MethodNN(
+            #         name, *db, shape, schema, detail, dgen_opt, False, loop_method, **options)
+            #     plot_lr_curve(history, loop_method)
+            #     plot_reduction(embeddings=embed_train,
+            #                    targets=y_train, title=loop_method+'_train')
+            #     plot_reduction(embeddings=embed_test, targets=y_test,
+            #                    title=loop_method+'_test')
 
-                for weights, n_neighbors in KNN:
-                    loop_knn = loop_method + \
-                        '_KNN_{}_{}N'.format(weights, n_neighbors)
-                    MethodKNN(rpt, embed_train, embed_test, y_train, y_test,
-                              n_cls, weights, n_neighbors, n_jobs, loop_knn)
-                rpt.end_line()
+            #     for weights, n_neighbors in KNN:
+            #         loop_knn = loop_method + \
+            #             '_KNN_{}_{}N'.format(weights, n_neighbors)
+            #         MethodKNN(rpt, embed_train, embed_test, y_train, y_test,
+            #                   n_cls, weights, n_neighbors, n_jobs, loop_knn)
+            #     rpt.end_line()
 rpt.flush()
 rpt.close()

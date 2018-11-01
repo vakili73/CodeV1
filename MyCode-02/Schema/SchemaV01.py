@@ -208,7 +208,7 @@ class SchemaV01(BaseSchema):
         self.model = Model(inputs=[input_a, input_p, input_n], outputs=concat)
         return self
 
-    def buildMyModel(self, shape, n_cls):
+    def buildMyModelV1(self, shape, n_cls):
         model = self.build(shape)
         model.add(layers.Dense(128, activation='sigmoid'))
 
@@ -217,6 +217,8 @@ class SchemaV01(BaseSchema):
         self.output = model.output
 
         model.add(layers.Dense(n_cls, activation='softmax'))
+
+        self.myModel = model
 
         input_a = layers.Input(shape=shape)
         input_p = layers.Input(shape=shape)
@@ -257,8 +259,8 @@ class SchemaV01(BaseSchema):
         dist_concat = layers.Concatenate(
             axis=-1)([pos_distance, *neg_distances])
 
-        self.model = Model(
-            inputs=[input_a, input_p, *inputs_n], outputs=[dist_concat, output_p, *outputs_n])
+        self.model = Model(inputs=[input_a, input_p, *inputs_n],
+                           outputs=[dist_concat, output_p, *outputs_n])
         return self
 
     def build(self, shape):

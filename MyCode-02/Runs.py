@@ -20,12 +20,15 @@ from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 
-def load_loss(loss: str):
+def load_loss(loss: str, n_cls):
     if loss.startswith('K-'):
         loss = getattr(losses, loss[2:])
     elif loss.startswith('L-'):
         module = __import__('Losses')
         loss = getattr(module, loss[2:])()
+    elif loss.startswith('LN-'):
+        module = __import__('Losses')
+        loss = getattr(module, loss[3:])(n_cls)
     return loss
 
 
@@ -54,7 +57,7 @@ def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detai
     idx = re.search(r'_(None|[0-9]+)Shot_(-1|[0-9]+)Way', prefix).regs[0]
     plot_schema(schema.model, prefix[:idx[0]]+prefix[idx[1]:])
 
-    loss = load_loss(detail['loss'])
+    loss = load_loss(detail['loss'], n_cls)
     schema.model.compile(loss=loss, optimizer=optimizer,
                          metrics=detail['metrics'])
     if augment:
@@ -93,10 +96,18 @@ def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detai
     embed_test = schema.getModel().predict(X_test)
 
     if 'classification' in detail.keys():
-        y_score = schema.model.predict(X_train)
-        report_classification(y_train, y_score, n_cls, prefix+'_train')
-        y_score = schema.model.predict(X_test)
-        report_classification(y_test, y_score, n_cls, prefix+'_test')
+        if detail['classification'] == '':
+            y_score = schema.model.predict(X_train)
+            report_classification(y_train, y_score, n_cls, prefix+'_train')
+            y_score = schema.model.predict(X_test)
+            report_classification(y_test, y_score, n_cls, prefix+'_test')
+        else:
+            model = getattr(schema, detail['classification'])
+            y_score = model.predict(X_train)
+            report_classification(y_train, y_score, n_cls, prefix+'_train')
+            y_score = model.predict(X_test)
+            report_classification(y_test, y_score, n_cls, prefix+'_test')
+
 
     save_feature(embed_train, y_train, prefix +
                  '_'+schema.extract_layer+'_train')

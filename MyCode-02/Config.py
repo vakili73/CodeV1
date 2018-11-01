@@ -1,33 +1,39 @@
 
 METHOD = {
     # name, loss
-    # K: keras, L: local
-    'ConventionalV1': {
-        'loss': 'K-categorical_crossentropy',
-        'metrics': ['acc'],
-        'datagen': 'Original',
-        'classification': '',
+    # K: keras, L: local, LN: local with n_cls arguments
+    'MyModelV1': {
+        'loss': 'LN-my_loss_v1',
+        'metrics': [],
+        'datagen': 'Avo',
+        'classification': 'myModel',
     },
-    'SiameseV1': {
-        'loss': 'K-binary_crossentropy',
-        'metrics': ['acc'],
-        'datagen': 'SiameseV1',
-    },
-    'SiameseV2': {
-        'loss': 'L-contrastive',
-        'metrics': ['acc'],
-        'datagen': 'SiameseV2',
-    },
-    'TripletV1': {
-        'loss': 'K-mean_squared_error',
-        'metrics': ['acc'],
-        'datagen': 'Triplet',
-    },
-    'TripletV2': {
-        'loss': 'L-triplet',
-        'metrics': ['acc'],
-        'datagen': 'Triplet',
-    },
+    # 'ConventionalV1': {
+    #     'loss': 'K-categorical_crossentropy',
+    #     'metrics': ['acc'],
+    #     'datagen': 'Original',
+    #     'classification': '',
+    # },
+    # 'SiameseV1': {
+    #     'loss': 'K-binary_crossentropy',
+    #     'metrics': ['acc'],
+    #     'datagen': 'SiameseV1',
+    # },
+    # 'SiameseV2': {
+    #     'loss': 'L-contrastive',
+    #     'metrics': ['acc'],
+    #     'datagen': 'SiameseV2',
+    # },
+    # 'TripletV1': {
+    #     'loss': 'K-mean_squared_error',
+    #     'metrics': ['acc'],
+    #     'datagen': 'Triplet',
+    # },
+    # 'TripletV2': {
+    #     'loss': 'L-triplet',
+    #     'metrics': ['acc'],
+    #     'datagen': 'Triplet',
+    # },
 }
 
 KNN = [
@@ -82,6 +88,6 @@ CONFIG = [
     ('mnist', 'V01', _DATAGEN_OPT_BW_IMAGE),
     ('nist', 'V02', _DATAGEN_OPT_BW_IMAGE),
     ('omniglot', 'V04', _DATAGEN_OPT_BW_IMAGE),
-    ('stl10', 'V04', _DATAGEN_OPT_COLORED_IMAGE),
-    ('svhn', 'V03', _DATAGEN_OPT_COLORED_IMAGE),
+    # ('stl10', 'V04', _DATAGEN_OPT_COLORED_IMAGE),
+    # ('svhn', 'V03', _DATAGEN_OPT_COLORED_IMAGE),
 ]
