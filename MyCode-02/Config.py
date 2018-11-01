@@ -68,19 +68,19 @@ _DATAGEN_OPT_BW_IMAGE = {
 
 CONFIG = [
     # dataset, schema, dgen_opt
-    # ('cifar10', 'V03', _DATAGEN_OPT_COLORED_IMAGE),
-    # ('cifar100', 'V03', _DATAGEN_OPT_COLORED_IMAGE),
-    # ('fashion', 'V01', {
-    #     'rotation_range': 15,
-    #     'width_shift_range': 0.15,
-    #     'height_shift_range': 0.15,
-    #     'shear_range': 0.15,
-    #     'zoom_range': 0.15,
-    #     'horizontal_flip': True,
-    # }),
-    # ('homus', 'V02', _DATAGEN_OPT_BW_IMAGE),
-    # ('mnist', 'V01', _DATAGEN_OPT_BW_IMAGE),
-    # ('nist', 'V02', _DATAGEN_OPT_BW_IMAGE),
+    ('cifar10', 'V03', _DATAGEN_OPT_COLORED_IMAGE),
+    ('cifar100', 'V03', _DATAGEN_OPT_COLORED_IMAGE),
+    ('fashion', 'V01', {
+        'rotation_range': 15,
+        'width_shift_range': 0.15,
+        'height_shift_range': 0.15,
+        'shear_range': 0.15,
+        'zoom_range': 0.15,
+        'horizontal_flip': True,
+    }),
+    ('homus', 'V02', _DATAGEN_OPT_BW_IMAGE),
+    ('mnist', 'V01', _DATAGEN_OPT_BW_IMAGE),
+    ('nist', 'V02', _DATAGEN_OPT_BW_IMAGE),
     ('omniglot', 'V04', _DATAGEN_OPT_BW_IMAGE),
     ('stl10', 'V04', _DATAGEN_OPT_COLORED_IMAGE),
     ('svhn', 'V03', _DATAGEN_OPT_COLORED_IMAGE),

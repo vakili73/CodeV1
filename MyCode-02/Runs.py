@@ -118,5 +118,4 @@ def MethodKNN(rpt, X_train, X_test, y_train, y_test, n_cls,
         accu_score = metrics.accuracy_score(y_data, y_pred)
         f1_score = metrics.f1_score(y_data, y_pred, average='weighted')
         rpt.write_knn_metrics(weights, n_neighbors, accu_score, f1_score)
-    # _method_knn(X_train, y_train, prefix+'_train')
     _method_knn(X_test, y_test, prefix+'_test')
