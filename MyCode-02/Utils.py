@@ -60,7 +60,7 @@ def plot_reduction(**kwargs):
     plot_pca_reduction(**kwargs)
 
 
-def plot_lr_curve(history, title, ylim=(0, 2.5), save=True,
+def plot_lr_curve(history, title, save=True,
                   base_path='./logs/lrcurves') -> plt.Figure:
     plt.clf()
     plt.gcf().set_size_inches(*figsize)
@@ -73,7 +73,6 @@ def plot_lr_curve(history, title, ylim=(0, 2.5), save=True,
     plt.plot(history.epoch,
              history.history['val_loss'],
              label='Valid loss')
-    plt.ylim(ylim)
     plt.legend()
     if save:
         if not os.path.exists(base_path):

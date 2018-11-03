@@ -144,12 +144,12 @@ class SchemaV04(BaseSchema):
             pos_distance_layer = layers.Lambda(
                 lambda tensors: K.sqrt(
                     K.sum(K.square(tensors[0] - tensors[1]), axis=-1,
-                          keepdims=True)), output_shape=output_shape)
+                          keepdims=True) + epsilon()), output_shape=output_shape)
             pos_distance = pos_distance_layer([embedded_a, embedded_p])
             neg_distance_layer = layers.Lambda(
                 lambda tensors: K.sqrt(
                     K.sum(K.square(tensors[0] - tensors[1]), axis=-1,
-                          keepdims=True)), output_shape=output_shape)
+                          keepdims=True) + epsilon()), output_shape=output_shape)
             neg_distance = neg_distance_layer([embedded_a, embedded_n])
 
         concat = layers.Concatenate(axis=-1)([pos_distance, neg_distance])
@@ -217,6 +217,7 @@ class SchemaV04(BaseSchema):
         self.input = model.input
         self.output = model.output
 
+        model.add(layers.Dropout(0.5))
         model.add(layers.Dense(n_cls, activation='softmax'))
 
         self.myModel = model

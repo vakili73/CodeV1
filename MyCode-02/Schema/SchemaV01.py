@@ -216,6 +216,7 @@ class SchemaV01(BaseSchema):
         self.input = model.input
         self.output = model.output
 
+        model.add(layers.Dropout(0.5))
         model.add(layers.Dense(n_cls, activation='softmax'))
 
         self.myModel = model

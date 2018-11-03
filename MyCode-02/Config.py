@@ -8,32 +8,32 @@ METHOD = {
         'datagen': 'Avo',
         'classification': 'myModel',
     },
-    # 'ConventionalV1': {
-    #     'loss': 'K-categorical_crossentropy',
-    #     'metrics': ['acc'],
-    #     'datagen': 'Original',
-    #     'classification': '',
-    # },
-    # 'SiameseV1': {
-    #     'loss': 'K-binary_crossentropy',
-    #     'metrics': ['acc'],
-    #     'datagen': 'SiameseV1',
-    # },
-    # 'SiameseV2': {
-    #     'loss': 'L-contrastive',
-    #     'metrics': ['acc'],
-    #     'datagen': 'SiameseV2',
-    # },
-    # 'TripletV1': {
-    #     'loss': 'K-mean_squared_error',
-    #     'metrics': ['acc'],
-    #     'datagen': 'Triplet',
-    # },
-    # 'TripletV2': {
-    #     'loss': 'L-triplet',
-    #     'metrics': ['acc'],
-    #     'datagen': 'Triplet',
-    # },
+    'ConventionalV1': {
+        'loss': 'K-categorical_crossentropy',
+        'metrics': ['acc'],
+        'datagen': 'Original',
+        'classification': '',
+    },
+    'SiameseV1': {
+        'loss': 'K-binary_crossentropy',
+        'metrics': ['acc'],
+        'datagen': 'SiameseV1',
+    },
+    'SiameseV2': {
+        'loss': 'L-contrastive',
+        'metrics': ['acc'],
+        'datagen': 'SiameseV2',
+    },
+    'TripletV1': {
+        'loss': 'K-mean_squared_error',
+        'metrics': ['acc'],
+        'datagen': 'Triplet',
+    },
+    'TripletV2': {
+        'loss': 'L-triplet',
+        'metrics': ['acc'],
+        'datagen': 'Triplet',
+    },
 }
 
 KNN = [
@@ -48,10 +48,11 @@ KNN = [
 FEWSHOT = [
     # shot, way
     (None, -1),
+    (1, -1),
     (5, -1),
     (15, -1),
-    # (5, 5),
-    # (15, 5),
+    (5, 5),
+    (15, 5),
 ]
 
 _DATAGEN_OPT_COLORED_IMAGE = {
@@ -88,6 +89,6 @@ CONFIG = [
     ('mnist', 'V01', _DATAGEN_OPT_BW_IMAGE),
     ('nist', 'V02', _DATAGEN_OPT_BW_IMAGE),
     ('omniglot', 'V04', _DATAGEN_OPT_BW_IMAGE),
-    # ('stl10', 'V04', _DATAGEN_OPT_COLORED_IMAGE),
-    # ('svhn', 'V03', _DATAGEN_OPT_COLORED_IMAGE),
+    ('stl10', 'V04', _DATAGEN_OPT_COLORED_IMAGE),
+    ('svhn', 'V03', _DATAGEN_OPT_COLORED_IMAGE),
 ]
