@@ -264,6 +264,80 @@ class SchemaV01(BaseSchema):
                            outputs=[dist_concat, output_p, *outputs_n])
         return self
 
+    def buildMyModelV2(self, shape, n_cls):
+        model = Sequential()
+        model.add(layers.Conv2D(32, (3, 3), activation='sigmoid',
+                                input_shape=shape))
+        model.add(layers.Conv2D(32, (3, 3), activation='sigmoid'))
+        flattened_conv02 = layers.Flatten()(model.output)
+        model.add(layers.MaxPooling2D())
+        model.add(layers.Flatten())
+
+        model.add(layers.Dense(128, activation='sigmoid'))
+
+        self.extract_layer = 'dense_128_sigmoid'
+        self.input = model.input
+        self.output = model.output
+
+        model.add(layers.Dense(n_cls, activation='softmax'))
+
+        self.myModel = model
+
+        input_a = layers.Input(shape=shape)
+        input_p = layers.Input(shape=shape)
+        input_n = layers.Input(shape=shape)
+
+        output_p = model(input_p)
+
+        embed_model = self.getModel()
+        embedded_a = embed_model(input_a)
+        embedded_p = embed_model(input_p)
+        embedded_n = embed_model(input_n)
+
+        embed_model = Model(inputs=model.input,
+                            outputs=flattened_conv02)
+        embed_conv02_a = embed_model(input_a)
+        embed_conv02_p = embed_model(input_p)
+        embed_conv02_n = embed_model(input_n)
+
+        def output_shape(input_shape):
+            return input_shape[0], 1
+
+        def cosine_distance(tensor_a, tensor_b):
+            l2_norm_a = K.l2_normalize(tensor_a, axis=-1)
+            l2_norm_b = K.l2_normalize(tensor_b, axis=-1)
+            return 1-K.sum(l2_norm_a * l2_norm_b, axis=-1,
+                           keepdims=True)
+
+        def kullback_leibler_divergence(tensor_a, tensor_b):
+            return K.sum(tensor_a * K.log(tensor_a / tensor_b), axis=-1,
+                         keepdims=True)
+
+        divergence_layer = layers.Lambda(
+            lambda tensors: kullback_leibler_divergence(
+                tensors[0], tensors[1]),
+            output_shape=output_shape)
+        pos_divergence_conv02 = divergence_layer(
+            [embed_conv02_a, embed_conv02_p])
+        neg_divergence_conv02 = divergence_layer(
+            [embed_conv02_a, embed_conv02_n])
+
+        diver_concat = layers.Concatenate(
+            axis=-1)([pos_divergence_conv02, neg_divergence_conv02])
+
+        distance_layer = layers.Lambda(
+            lambda tensors: kullback_leibler_divergence(tensors[0], tensors[1]),
+            output_shape=output_shape)
+        pos_distance = distance_layer([embedded_a, embedded_p])
+        neg_distance = distance_layer([embedded_a, embedded_n])
+
+        dist_concat = layers.Concatenate(
+            axis=-1)([pos_distance, neg_distance])
+
+        self.model = Model(inputs=[input_a, input_p, input_n],
+                           outputs=[output_p, dist_concat, diver_concat])
+        return self
+
     def build(self, shape):
         """
         [1] https://github.com/ajgallego/Clustering-based-k-Nearest-Neighbor/blob/master/utilKerasModels.py
