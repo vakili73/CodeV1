@@ -4,6 +4,7 @@ import imageio
 import glob
 
 import matplotlib.pyplot as plt
+from skimage.transform import resize
 from sklearn.model_selection import StratifiedKFold
 
 X = []
@@ -18,7 +19,8 @@ y = np.array(y, dtype=np.int)-1
 print(len(np.unique(y)))
 
 X = np.array(X)
-X = np.reshape(X, (X.shape[0], 105*105))
+X = np.round(resize(X, (X.shape[0], 28, 28, 1)) * 255.0).astype('uint8')
+X = np.reshape(X, (X.shape[0], 28*28*1))
 
 concat = np.c_[y, X]
 
