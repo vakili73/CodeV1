@@ -2,12 +2,6 @@
 METHOD = {
     # name, loss
     # K: keras, L: local, LN: local with n_cls arguments
-    'MyModelV1': {
-        'loss': 'LN-my_loss_v1',
-        'metrics': [],
-        'datagen': 'Avo',
-        'classification': 'myModel',
-    },
     'ConventionalV1': {
         'loss': 'K-categorical_crossentropy',
         'metrics': ['acc'],
@@ -86,9 +80,10 @@ CONFIG = [
         'horizontal_flip': True,
     }),
     ('homus', 'V02', _DATAGEN_OPT_BW_IMAGE),
+    ('mingnet', 'V04', _DATAGEN_OPT_BW_IMAGE),
     ('mnist', 'V01', _DATAGEN_OPT_BW_IMAGE),
     ('nist', 'V02', _DATAGEN_OPT_BW_IMAGE),
-    ('omniglot', 'V04', _DATAGEN_OPT_BW_IMAGE),
+    ('omniglot', 'V01', _DATAGEN_OPT_BW_IMAGE),
     ('stl10', 'V04', _DATAGEN_OPT_COLORED_IMAGE),
     ('svhn', 'V03', _DATAGEN_OPT_COLORED_IMAGE),
 ]

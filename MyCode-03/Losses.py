@@ -48,11 +48,3 @@ def triplet(alpha=0.4):
         return K.mean(loss)
 
     return loss
-
-def my_loss_v1(n_cls):
-
-    loss = [K.binary_crossentropy]
-    for _ in range(n_cls):
-        loss.append(K.categorical_crossentropy)
-    
-    return loss
