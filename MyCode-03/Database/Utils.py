@@ -32,7 +32,7 @@ def load_data(db_name) -> tuple:
             y_train = np.concatenate((y_train, data[:, 0].astype(
                 'int')), axis=0) if y_train.size else data[:, 0].astype('int')
     with open(DATABASE+'/'+db_name+'/Full.cp', 'wb') as fileObj:
-        _pickle.dump((X_train, X_test, y_train, y_test), fileObj)
+        _pickle.dump((X_train, X_test, y_train, y_test), fileObj, protocol=4)
     return X_train, X_test, y_train, y_test
 
 
