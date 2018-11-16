@@ -26,6 +26,19 @@ class SchemaV02(BaseSchema):
         self.model = model
         return self
 
+    def buildConventionalV2(self, shape, n_cls):
+        model = self.build(shape)
+        layer = layers.Dense(128, activation='relu')
+        model.add(layer)
+        model.add(layers.Dropout(0.5))
+        model.add(layers.Dense(n_cls, activation='softmax'))
+
+        self.extract_layer = 'dense_128_relu'
+        self.input = model.input
+        self.output = layer.output
+        self.model = model
+        return self
+
     def buildSiameseV1(self, shape, n_cls, distance='l1'):
         """
         The model used in [1]. Which uses the function of cross-entropy. It is assumed that 1 for the same and 0 for different images.
