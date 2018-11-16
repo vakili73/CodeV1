@@ -8,6 +8,12 @@ METHOD = {
         'datagen': 'Original',
         'classification': '',
     },
+    'ConventionalV2': {
+        'loss': 'K-categorical_crossentropy',
+        'metrics': ['acc'],
+        'datagen': 'Original',
+        'classification': '',
+    },
     'SiameseV1': {
         'loss': 'K-binary_crossentropy',
         'metrics': ['acc'],
