@@ -209,62 +209,6 @@ class SchemaV04(BaseSchema):
         self.model = Model(inputs=[input_a, input_p, input_n], outputs=concat)
         return self
 
-    def buildMyModelV1(self, shape, n_cls):
-        model = self.build(shape)
-        model.add(layers.Dense(128, activation='sigmoid'))
-
-        self.extract_layer = 'dense_128_sigmoid'
-        self.input = model.input
-        self.output = model.output
-
-        model.add(layers.Dropout(0.5))
-        model.add(layers.Dense(n_cls, activation='softmax'))
-
-        self.myModel = model
-
-        input_a = layers.Input(shape=shape)
-        input_p = layers.Input(shape=shape)
-        inputs_n = []
-        for i in range(n_cls-1):
-            inputs_n.append(layers.Input(shape=shape))
-
-        output_p = model(input_p)
-        outputs_n = []
-        for i in range(n_cls-1):
-            outputs_n.append(model(inputs_n[i]))
-
-        embed_model = self.getModel()
-        embedded_a = embed_model(input_a)
-        embedded_p = embed_model(input_p)
-        embeddeds_n = []
-        for i in range(n_cls-1):
-            embeddeds_n.append(embed_model(inputs_n[i]))
-
-        def output_shape(input_shape):
-            return input_shape[0], 1
-
-        def cosine_distance(tensor_a, tensor_b):
-            l2_norm_a = K.l2_normalize(tensor_a, axis=-1)
-            l2_norm_b = K.l2_normalize(tensor_b, axis=-1)
-            return 1-K.sum(l2_norm_a * l2_norm_b, axis=-1,
-                           keepdims=True)
-
-        distance_layer = layers.Lambda(
-            lambda tensors: cosine_distance(tensors[0], tensors[1]),
-            output_shape=output_shape)
-        pos_distance = distance_layer([embedded_a, embedded_p])
-
-        neg_distances = []
-        for item in embeddeds_n:
-            neg_distances.append(distance_layer([embedded_a, item]))
-
-        dist_concat = layers.Concatenate(
-            axis=-1)([pos_distance, *neg_distances])
-
-        self.model = Model(inputs=[input_a, input_p, *inputs_n],
-                           outputs=[dist_concat, output_p, *outputs_n])
-        return self
-
     def build(self, shape):   
         """
         [1] Designed by the experimental result and LeNet-5[3] inspiration
