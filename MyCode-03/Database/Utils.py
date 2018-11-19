@@ -22,7 +22,8 @@ def load_data(db_name) -> tuple:
     X_train = np.array([], dtype='float')
     y_train = np.array([], dtype='int')
     for cv in CVNAMES:
-        data = pd.read_csv(DATABASE+'/'+db_name+'/'+cv+'.txt').values
+        data = pd.read_csv(DATABASE+'/'+db_name+'/' +
+                           cv+'.txt', header=None).values
         if cv == 'E':
             X_test = data[:, 1:].astype('float')
             y_test = data[:, 0].astype('int')

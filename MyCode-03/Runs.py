@@ -11,40 +11,9 @@ from Schema.Utils import save_weights
 from Schema.Utils import save_feature
 
 from sklearn import metrics
-from sklearn.metrics import confusion_matrix
-from sklearn.metrics import classification_report
 from sklearn.neighbors import KNeighborsClassifier
 
-from tensorflow.keras import losses
-from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
-
-
-def load_loss(loss: str, n_cls):
-    if loss.startswith('K-'):
-        loss = getattr(losses, loss[2:])
-    elif loss.startswith('L-'):
-        module = __import__('Losses')
-        loss = getattr(module, loss[2:])()
-    elif loss.startswith('LN-'):
-        module = __import__('Losses')
-        loss = getattr(module, loss[3:])(n_cls)
-    return loss
-
-
-def load_datagen(datagen):
-    module = __import__('Generator')
-    datagen = getattr(module, datagen)
-    return datagen
-
-
-def report_classification(y_true, y_score, n_cls, title):
-    print(title)
-    y_pred = np.argmax(y_score, axis=-1)
-    print(classification_report(y_true, y_pred, digits=5))
-    plot_roc_curve(title, to_categorical(y_true, n_cls), y_score, n_cls)
-    cm = confusion_matrix(y_true, y_pred)
-    plot_confusion_matrix(cm, title, np.unique(y_true))
 
 
 def MethodNN(name, X_train, X_test, y_train, y_test, n_cls, shape, schema, detail,

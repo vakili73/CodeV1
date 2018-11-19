@@ -2,6 +2,12 @@
 METHOD = {
     # name, loss
     # K: keras, L: local, LN: local with n_cls arguments
+    'MyModelV1': {
+        'loss': 'LN-my_loss_v1',
+        'metrics': [],
+        'datagen': 'Avo',
+        'classification': 'myModel',
+    },
     'ConventionalV1': {
         'loss': 'K-categorical_crossentropy',
         'metrics': ['acc'],
@@ -42,17 +48,30 @@ KNN = [
     ('distance', 3),
     ('uniform', 5),
     ('distance', 7),
-    # ('uniform', 9),
+    ('uniform', 9),
 ]
 
 FEWSHOT = [
     # shot, way
-    (None, -1),
-    (1, -1),
-    (5, -1),
-    (15, -1),
-    (5, 5),
-    (15, 5),
+    # (None, -1),
+    # (5, -1),
+    # (10, -1),
+    # (20, -1),
+    # (50, -1),
+    # (5, 5),
+    # (10, 5),
+    # (20, 5),
+    # (50, 5),
+    # (5, 10),
+    # (10, 10),
+    (20, 10),
+    (50, 10),
+    (200, 10),
+    (500, 10),
+    # (5, 20),
+    # (10, 20),
+    # (20, 20),
+    # (50, 20),
 ]
 
 _DATAGEN_OPT_COLORED_IMAGE = {

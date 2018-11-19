@@ -9,8 +9,13 @@ from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import confusion_matrix
+from sklearn.metrics import classification_report
 from sklearn.manifold import LocallyLinearEmbedding
 from sklearn.decomposition import TruncatedSVD, PCA
+
+from tensorflow.keras import losses
+from tensorflow.keras.utils import to_categorical
 
 figsize = (19.20, 10.80)
 
@@ -173,3 +178,30 @@ def plot_confusion_matrix(cm, title, classes, save=True, normalize=True,
         path = base_path+'/'+title+'.png'
         plt.savefig(path)
     return plt.gcf()
+
+
+def load_loss(loss: str, n_cls):
+    if loss.startswith('K-'):
+        loss = getattr(losses, loss[2:])
+    elif loss.startswith('L-'):
+        module = __import__('Losses')
+        loss = getattr(module, loss[2:])()
+    elif loss.startswith('LN-'):
+        module = __import__('Losses')
+        loss = getattr(module, loss[3:])(n_cls)
+    return loss
+
+
+def load_datagen(datagen):
+    module = __import__('Generator')
+    datagen = getattr(module, datagen)
+    return datagen
+
+
+def report_classification(y_true, y_score, n_cls, title):
+    print(title)
+    y_pred = np.argmax(y_score, axis=-1)
+    print(classification_report(y_true, y_pred, digits=5))
+    # plot_roc_curve(title, to_categorical(y_true, n_cls), y_score, n_cls)
+    # cm = confusion_matrix(y_true, y_pred)
+    # plot_confusion_matrix(cm, title, np.unique(y_true))
