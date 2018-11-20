@@ -53,7 +53,7 @@ conv_out_02 = layers.Flatten()(max2d_01)
 drop_01 = layers.Dropout(0.25)(max2d_01)
 flat_01 = layers.Flatten()(drop_01)
 
-dense_01 = layers.Dense(128, activation='relu')(flat_01)
+dense_01 = layers.Dense(128, activation='sigmoid')(flat_01)
 
 conv_out_03 = layers.Flatten()(dense_01)
 
@@ -66,7 +66,7 @@ org_model = Model(inputs=in_layer, outputs=out_layer)
 org_model.compile(loss='categorical_crossentropy',
                   optimizer='adadelta', metrics=['acc'])
 
-org_model.fit(X_train, to_categorical(y_train), batch_size=128, epochs=1000, callbacks=[
+org_model.fit(X_train, to_categorical(y_train), batch_size=128, epochs=15, callbacks=[
     EarlyStopping(patience=50)], validation_data=(X_test, to_categorical(y_test)), verbose=2)
 
 
@@ -145,25 +145,23 @@ def _dist(func, X, y):
     return dist
 
 
-def general_jaccard(a, b):
-    _a = np.sum(np.min(np.stack((a, b)), axis=0))
-    _b = np.sum(np.max(np.stack((a, b)), axis=0))
-    return _a/_b
-
-
 metrics = [
     (lambda a, b: distance.cosine(a, b), 'cosine'),
     (lambda a, b: distance.correlation(a, b), 'correlation'),
     (lambda a, b: distance.euclidean(a, b), 'euclidean'),
     (lambda a, b: distance.sqeuclidean(a, b), 'sqeuclidean'),
-    (lambda a, b: general_jaccard(a, b), 'general_jaccard'),
+    (lambda a, b: Metrics.general_jaccard_similarity(
+        a, b), 'general_jaccard_similarity'),
     (lambda a, b: Metrics.kullback_leibler(a, b), 'kullback_leibler'),
-    (lambda a, b: Metrics.softmax_squared_l2_distance(a, b), 'softmax_squared_l2_distance'),
-    (lambda a, b: Metrics.softmax_kullback_leibler(a, b), 'softmax_kullback_leibler'),
+    (lambda a, b: Metrics.softmax_squared_l2_distance(
+        a, b), 'softmax_squared_l2_distance'),
+    (lambda a, b: Metrics.softmax_kullback_leibler(
+        a, b), 'softmax_kullback_leibler'),
     (lambda a, b: Metrics.cross_entropy(a, b), 'cross_entropy'),
     (lambda a, b: Metrics.softmax_cross_entropy(a, b), 'softmax_cross_entropy'),
     (lambda a, b: Metrics.cross_entropy_loss(a, b), 'cross_entropy_loss'),
-    (lambda a, b: Metrics.softmax_cross_entropy_loss(a, b), 'softmax_cross_entropy_loss'),
+    (lambda a, b: Metrics.softmax_cross_entropy_loss(
+        a, b), 'softmax_cross_entropy_loss'),
     (lambda a, b: Metrics.logistic_loss(a, b), 'logistic_loss'),
     (lambda a, b: Metrics.softmax_logistic_loss(a, b), 'softmax_logistic_loss'),
 ]
@@ -178,8 +176,8 @@ def _analyze(X, y, title):
         np.savetxt('./dists/'+title+'_'+name+'.csv', dist, delimiter=',')
 
 
-_analyze(X_01, y_01, '01')
-_analyze(X_02, y_02, '02')
+# _analyze(X_01, y_01, '01')
+# _analyze(X_02, y_02, '02')
 _analyze(X_03, y_03, '03')
 
 # %% kNN Analaysis

@@ -22,7 +22,21 @@ def general_jaccard_similarity(tensor_a, tensor_b):
 def softmax_kullback_leibler(tensor_a, tensor_b):
     tensor_a = softmax(tensor_a)
     tensor_b = softmax(tensor_b)
+    tensor_a = K.clip(tensor_a, K.epsilon(), 1.0)
+    tensor_b = K.clip(tensor_b, K.epsilon(), 1.0)
     return K.sum(tensor_a * K.log(tensor_a / tensor_b), axis=-1)
+
+
+def entropy(tensor):
+    tensor = K.clip(tensor, K.epsilon(), 1.0)
+    return -K.sum(tensor * K.log(tensor), axis=-1)
+
+
+
+def softmax_entropy(tensor):
+    tensor = softmax(tensor)
+    tensor = K.clip(tensor, K.epsilon(), 1.0)
+    return -K.sum(tensor * K.log(tensor), axis=-1)
 
 
 def cross_entropy(tensor_a, tensor_b):
@@ -33,6 +47,7 @@ def cross_entropy(tensor_a, tensor_b):
 def softmax_cross_entropy(tensor_a, tensor_b):
     tensor_a = softmax(tensor_a)
     tensor_b = softmax(tensor_b)
+    tensor_b = K.clip(tensor_b, K.epsilon(), 1.0)
     return -K.sum(tensor_a * K.log(tensor_b), axis=-1)
 
 

@@ -15,7 +15,7 @@ def kullback_leibler(a, b):
     return np.sum(a * np.log(a / b), axis=-1)
 
 
-def general_jaccard(a, b):
+def general_jaccard_similarity(a, b):
     _a = np.sum(np.min(np.stack((a, b)), axis=0))
     _b = np.sum(np.max(np.stack((a, b)), axis=0))
     return _a/_b
@@ -24,7 +24,20 @@ def general_jaccard(a, b):
 def softmax_kullback_leibler(a, b):
     a = softmax(a)
     b = softmax(b)
+    a = np.clip(a, epsilon, 1.0)
+    b = np.clip(b, epsilon, 1.0)
     return np.sum(a * np.log(a / b), axis=-1)
+
+
+def entropy(x):
+    x = np.clip(x, epsilon, 1.0)
+    return -np.sum(x * np.log(x), axis=-1)
+
+
+def softmax_entropy(x):
+    x = softmax(x)
+    x = np.clip(x, epsilon, 1.0)
+    return -np.sum(x * np.log(x), axis=-1)
 
 
 def cross_entropy(a, b):
@@ -36,6 +49,7 @@ def cross_entropy(a, b):
 def softmax_cross_entropy(a, b):
     a = softmax(a)
     b = softmax(b)
+    b = np.clip(b, epsilon, 1.0)
     return -np.sum(a * np.log(b), axis=-1)
 
 
@@ -98,7 +112,4 @@ if __name__ == "__main__":
     a = np.random.rand(size)
     b = np.random.rand(size)
 
-    print(softmax_logistic_loss(np.array([1., 0., 1.]),
-                                np.array([0.99999, 0.00001, 0.99999])))
-    print(logistic_loss(np.array([1., 0., 1.]),
-                        np.array([0.99999, 0.00001, 0.99999])))
+    print(entropy(np.array([1., 0.75, 0.5, 0.25, 0.])))
