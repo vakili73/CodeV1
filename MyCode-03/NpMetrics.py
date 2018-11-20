@@ -4,17 +4,26 @@ import numpy as np
 epsilon = 1.e-7
 
 
+def softmax(x):
+    exps = np.exp(x)
+    return exps/np.sum(exps, axis=-1)
+
+
 def kullback_leibler(a, b):
     a = np.clip(a, epsilon, 1.0)
     b = np.clip(b, epsilon, 1.0)
     return np.sum(a * np.log(a / b), axis=-1)
 
 
+def general_jaccard(a, b):
+    _a = np.sum(np.min(np.stack((a, b)), axis=0))
+    _b = np.sum(np.max(np.stack((a, b)), axis=0))
+    return _a/_b
+
+
 def softmax_kullback_leibler(a, b):
-    a = a/np.sum(a, axis=-1)
-    b = b/np.sum(b, axis=-1)
-    a = np.clip(a, epsilon, 1.0)
-    b = np.clip(b, epsilon, 1.0)
+    a = softmax(a)
+    b = softmax(b)
     return np.sum(a * np.log(a / b), axis=-1)
 
 
@@ -25,9 +34,8 @@ def cross_entropy(a, b):
 
 
 def softmax_cross_entropy(a, b):
-    a = a/np.sum(a, axis=-1)
-    b = b/np.sum(b, axis=-1)
-    b = np.clip(b, epsilon, 1.0)
+    a = softmax(a)
+    b = softmax(b)
     return -np.sum(a * np.log(b), axis=-1)
 
 
@@ -37,8 +45,10 @@ def cross_entropy_loss(a, b):
 
 
 def softmax_cross_entropy_loss(a, b):
-    return softmax_cross_entropy(a, b) +\
-        softmax_cross_entropy(1.0-a, 1.0-b)
+    a = softmax(a)
+    b = softmax(b)
+    return cross_entropy(a, b) +\
+        cross_entropy(1.0-a, 1.0-b)
 
 
 def logistic_loss(a, b):
@@ -48,8 +58,10 @@ def logistic_loss(a, b):
 
 
 def softmax_logistic_loss(a, b):
-    return (softmax_cross_entropy(a, b) +
-            softmax_cross_entropy(1.0-a, 1.0-b)) /\
+    a = softmax(a)
+    b = softmax(b)
+    return (cross_entropy(a, b) +
+            cross_entropy(1.0-a, 1.0-b)) /\
         a.shape[-1]
 
 
@@ -74,8 +86,8 @@ def squared_l2_distance(a, b):
 
 
 def softmax_squared_l2_distance(a, b):
-    a = a/np.sum(a, axis=-1)
-    b = b/np.sum(b, axis=-1)
+    a = softmax(a)
+    b = softmax(b)
     return np.sum(np.square(a - b), axis=-1)
 
 
