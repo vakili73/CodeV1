@@ -90,17 +90,17 @@ if __name__ == "__main__":
 
             true_emb = y_true[:, -1]
 
-            embed_dist = Metrics.euclidean_distance(embed_01, embed_02)
-            # embed_dist = Metrics.kullback_leibler(embed_01, embed_02) +\
-            #     Metrics.kullback_leibler(embed_02, embed_01)
+            # embed_dist = Metrics.euclidean_distance(embed_01, embed_02)
+            embed_dist = Metrics.kullback_leibler(embed_01, embed_02) +\
+                Metrics.kullback_leibler(embed_02, embed_01)
             # embed_dist = Metrics.cosine_similarity(embed_01, embed_02)
 
             pos_embed_dist = true_emb * embed_dist
             neg_embed_dist = (1-true_emb) * embed_dist
 
             loss = \
-                Metrics.entropy(pos_embed_dist) +\
-                Metrics.entropy(neg_embed_dist) +\
+                Metrics.entropy(K.sigmoid(pos_embed_dist)) +\
+                Metrics.entropy(K.sigmoid(neg_embed_dist)) +\
                 Metrics.cross_entropy(tru_01, out_01) +\
                 Metrics.cross_entropy(tru_02, out_02)
 
