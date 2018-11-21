@@ -1,7 +1,9 @@
 import math
 import numpy as np
 
-epsilon = 1.e-7
+from tensorflow.keras import backend as K
+
+epsilon = K.epsilon()
 
 
 def softmax(x):
@@ -41,7 +43,7 @@ def softmax_entropy(x):
 
 
 def cross_entropy(a, b):
-    a = np.clip(a, 0.0, 1.0)
+    a = np.clip(a, epsilon, 1.0)
     b = np.clip(b, epsilon, 1.0)
     return -np.sum(a * np.log(b), axis=-1)
 

@@ -7,4 +7,5 @@ from .SiameseV2 import SiameseV2
 from .Triplet import Triplet
 
 from .MyDualV1 import MyDualV1
+from .MyTripletV1 import MyTripletV1
 from .Avo import Avo

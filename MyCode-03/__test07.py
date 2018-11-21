@@ -66,7 +66,7 @@ org_model = Model(inputs=in_layer, outputs=out_layer)
 org_model.compile(loss='categorical_crossentropy',
                   optimizer='adadelta', metrics=['acc'])
 
-org_model.fit(X_train, to_categorical(y_train), batch_size=128, epochs=15, callbacks=[
+org_model.fit(X_train, to_categorical(y_train), batch_size=128, epochs=20, callbacks=[
     EarlyStopping(patience=50)], validation_data=(X_test, to_categorical(y_test)), verbose=2)
 
 
@@ -109,10 +109,12 @@ _X, _y = _ext(X_train, y_train)
 embed_out_01 = out_01_model.predict(_X)
 embed_out_02 = out_02_model.predict(_X)
 embed_out_03 = out_03_model.predict(_X)
+embed_out_04 = org_model.predict(_X)
 
 X_01, y_01 = embed_out_01, _y
 X_02, y_02 = embed_out_02, _y
 X_03, y_03 = embed_out_03, _y
+X_04, y_04 = embed_out_04, _y
 
 # %% Embedding Analaysis
 
@@ -120,21 +122,25 @@ print('\nmin')
 print(np.min(X_01))
 print(np.min(X_02))
 print(np.min(X_03))
+print(np.min(X_04))
 
 print('\nmax')
 print(np.max(X_01))
 print(np.max(X_02))
 print(np.max(X_03))
+print(np.max(X_04))
 
 print('\nmean')
 print(np.mean(X_01))
 print(np.mean(X_02))
 print(np.mean(X_03))
+print(np.mean(X_04))
 
 print('\nstd')
 print(np.std(X_01))
 print(np.std(X_02))
-print(np.std(X_03), '\n\n')
+print(np.std(X_03))
+print(np.std(X_04), '\n\n')
 
 
 def _dist(func, X, y):
@@ -179,24 +185,31 @@ def _analyze(X, y, title):
 # _analyze(X_01, y_01, '01')
 # _analyze(X_02, y_02, '02')
 _analyze(X_03, y_03, '03')
+_analyze(X_04, y_04, '04')
 
 # %% kNN Analaysis
-train_embed = out_03_model.predict(X_train)
-test_embed = out_03_model.predict(X_test)
+def _kNN_analyze(out_model):
+    train_embed = out_model.predict(X_train)
+    test_embed = out_model.predict(X_test)
 
-clf = KNeighborsClassifier(
-    weights='uniform', n_neighbors=1, n_jobs=8)
-clf.fit(train_embed, y_train)
+    clf = KNeighborsClassifier(
+        weights='uniform', n_neighbors=1, n_jobs=8)
+    clf.fit(train_embed, y_train)
 
-y_score = clf.predict_proba(test_embed)
-print('1 neighbor knn top 1 accu: %f' %
-      (top_k_accuracy(y_score, y_test, 1)*100))
+    y_score = clf.predict_proba(test_embed)
+    print('1 neighbor knn top 1 accu: %f' %
+        (top_k_accuracy(y_score, y_test, 1)*100))
 
-clf = KNeighborsClassifier(
-    weights='distance', n_neighbors=9, n_jobs=8)
-clf.fit(train_embed, y_train)
+    clf = KNeighborsClassifier(
+        weights='distance', n_neighbors=9, n_jobs=8)
+    clf.fit(train_embed, y_train)
 
-y_score = clf.predict_proba(test_embed)
-print('knn top 1 accu: %f' % (top_k_accuracy(y_score, y_test, 1)*100))
-print('knn top 3 accu: %f' % (top_k_accuracy(y_score, y_test, 3)*100))
-print('knn top 5 accu: %f' % (top_k_accuracy(y_score, y_test, 5)*100))
+    y_score = clf.predict_proba(test_embed)
+    print('knn top 1 accu: %f' % (top_k_accuracy(y_score, y_test, 1)*100))
+    print('knn top 3 accu: %f' % (top_k_accuracy(y_score, y_test, 3)*100))
+    print('knn top 5 accu: %f' % (top_k_accuracy(y_score, y_test, 5)*100))
+
+print('out_03_model')
+_kNN_analyze(out_03_model)
+print('\norg_model')
+_kNN_analyze(org_model)
