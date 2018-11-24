@@ -26,8 +26,10 @@
 /*/*.log
 /*/logs.txt
 /*/*.csv
+/*/*.ods
 /*/figures
 /*/logs
+/*/dists*
 
 # python temporary files
 /*/__pycache__

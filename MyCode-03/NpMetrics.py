@@ -107,6 +107,50 @@ def softmax_squared_l2_distance(a, b):
     return np.sum(np.square(a - b), axis=-1)
 
 
+def discretize_with_histogram(a, bins):
+    _min = np.min(a)
+    _max = np.max(a)
+    _len_shape = len(a.shape)
+    _bins = np.array(range(bins))
+    _range = np.linspace(_min, _max, bins+1)
+    for _ in range(_len_shape):
+        _bins = np.expand_dims(_bins, axis=-1)
+        _range = np.expand_dims(_range, axis=-1)
+    _cond1 = np.greater_equal(a, _range[:-1])
+    _cond2 = np.less(a, _range[1:])
+    _cond3 = np.less_equal(a, _range[1:])
+    _cond4 = np.concatenate((_cond2[:-1], _cond3[-1:]), axis=0)
+    _all_cond = np.all(np.stack((_cond1, _cond4), axis=0), axis=0)
+    _axis = tuple([i+1 for i in range(_len_shape)])
+    _discrete = np.sum(_all_cond * _bins, axis=0)
+    _histogram = np.count_nonzero(_all_cond, axis=_axis)
+    return _discrete, _histogram
+
+
+def joint_histogram(a, bins):
+    _uniq_obj = np.zeros((bins, bins, 2, 1))
+    for i in range(bins):
+        for j in range(bins):
+            _uniq_obj[i, j, :, 0] = np.array([i, j])
+    _cond = np.all(np.equal(a, _uniq_obj), axis=2)
+    return np.count_nonzero(_cond, axis=2)
+
+
+def mutual_information(a, b, bins=256):
+    a, _ = discretize_with_histogram(a, bins=bins)
+    b, _ = discretize_with_histogram(b, bins=bins)
+    ab = np.stack([a.flatten(), b.flatten()])
+    joint_hist = joint_histogram(ab, bins=bins)
+    joint_proba = joint_hist/np.sum(joint_hist)
+    joint_proba = np.clip(joint_proba, 1e-7, 1)
+    a_proba = np.sum(joint_proba, axis=1)
+    b_proba = np.sum(joint_proba, axis=0)
+    b_proba = np.expand_dims(b_proba, axis=-1)
+    mui = joint_hist * joint_proba *\
+        np.log(joint_proba / (a_proba*b_proba))
+    return np.sum(mui)
+
+
 # %% Testing
 if __name__ == "__main__":
     size = 128

@@ -1,4 +1,6 @@
 import numpy as np
+import tensorflow as tf
+
 from tensorflow.keras import backend as K
 
 
@@ -30,7 +32,6 @@ def softmax_kullback_leibler(tensor_a, tensor_b):
 def entropy(tensor):
     tensor = K.clip(tensor, K.epsilon(), 1.0)
     return -K.sum(tensor * K.log(tensor), axis=-1)
-
 
 
 def softmax_entropy(tensor):
@@ -102,6 +103,58 @@ def softmax_squared_l2_distance(tensor_a, tensor_b):
     tensor_a = softmax(tensor_a)
     tensor_b = softmax(tensor_b)
     return K.sum(K.square(tensor_a - tensor_b), axis=-1)
+
+# failure
+def mutual_information(tensor_a, tensor_b, bins=256):
+    channel = tensor_a.shape[-1]
+    _tensor_ab = K.stack([tensor_a, tensor_b], axis=-1)
+
+    def _replace(tensor):
+        new_x = K.zeros(tensor.shape, dtype=tf.uint8)
+        _max = K.get_value(K.max(tensor))
+        _range = np.round(np.linspace(0, _max, bins+1), decimals=6)
+        for i in range(len(_range)-1):
+            _cond1 = K.greater_equal(tensor, _range[i]-K.epsilon())
+            if i+1 == len(_range)-1:
+                _cond2 = K.less_equal(tensor, _range[i+1]+K.epsilon())
+            else:
+                _cond2 = K.less(tensor, _range[i+1]+K.epsilon())
+                i = K.constant(i, dtype=tf.uint8)
+            tf.assign(
+                new_x[K.all(K.stack((_cond1, _cond2), axis=-1), axis=-1)], i)
+        return new_x
+
+    tensor_ab = K.zeros(_tensor_ab.shape, dtype=tf.uint8)
+    for c in range(channel):
+        tensor_ab[:, :, c, :] = _replace(_tensor_ab[:, :, c, :])
+
+    joint_histogram = K.zeros((bins, bins, channel), dtype=K.floatx())
+    for c in range(channel):
+        for i in range(bins):
+            for j in range(bins):
+                bcast = tf.broadcast_to(K.constant([i, j], dtype=tf.uint8),
+                                        tensor_ab[:, :, c, :].shape)
+                cond = K.equal(tensor_ab[:, :, c, :], bcast)
+                joint_histogram[i, j, c] = K.sum(K.all(cond, axis=-1))
+
+    joint_probability = joint_histogram/K.sum(joint_histogram, axis=(0, 1))
+    joint_probability = K.clip(joint_probability, K.epsilon(), 1)
+
+    a_marginal_proba = K.sum(joint_probability, axis=1)
+    b_marginal_proba = K.sum(joint_probability, axis=0)
+
+    mui = []
+    for c in range(channel):
+        _mui = []
+        for i in range(bins):
+            for j in range(bins):
+                _mui.append(joint_histogram[i, j, c] * K.sum(
+                    joint_probability[i, j, c] *
+                    K.log(joint_probability[i, j, c] /
+                           (a_marginal_proba[i, c]*b_marginal_proba[j, c]))))
+        mui.append(K.sum(_mui))
+
+    return K.mean(mui)
 
 
 # %% Testing

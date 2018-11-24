@@ -9,6 +9,7 @@ import NpMetrics
 from Database import INFO
 from Database.Utils import reshape
 from Database.Utils import load_data
+from Database.Utils import get_fewshot
 
 from Schema.Utils import save_feature
 from Schema.Utils import load_features
@@ -25,6 +26,7 @@ from tensorflow.keras import backend as K
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.callbacks import EarlyStopping
 
+from sklearn.utils import shuffle
 from sklearn.neighbors import KNeighborsClassifier
 
 
@@ -36,7 +38,10 @@ if __name__ == "__main__":
     shape = db['shape']
     n_cls = db['n_cls']
 
-    X_train, X_test, y_train, y_test = load_data('fashion')
+    X_train, X_test, y_train, y_test = get_fewshot(*load_data('fashion'), shot=10)
+
+    X_train, y_train = shuffle(X_train, y_train)
+    X_test, y_test = shuffle(X_test, y_test)
 
     X_train = reshape(X_train / 255.0, shape)
     X_test = reshape(X_test / 255.0, shape)
@@ -140,11 +145,11 @@ if __name__ == "__main__":
                 Metrics.cross_entropy(zero, K.tanh(pos_embed_dist_eclid)) +\
                 Metrics.cross_entropy(one, K.tanh(neg_embed_dist_eclid)) +\
                 \
-                pos_embed_dist_cosine_ll +\
-                neg_embed_simi_cosine_ll +\
                 Metrics.cross_entropy(tru_anc, out_anc) +\
                 Metrics.cross_entropy(tru_pos, out_pos) +\
                 Metrics.cross_entropy(tru_neg, out_neg)
+                # pos_embed_dist_cosine_ll +\
+                # neg_embed_simi_cosine_ll +\
                 # pos_embed_dist_kl_ll +\
                 # pos_embed_dist_eclid_ll +\
                 # \
@@ -156,7 +161,7 @@ if __name__ == "__main__":
                 # Metrics.cross_entropy(zero, neg_embed_simi_cosine_ll) +\
                 # Metrics.cross_entropy(zero, K.tanh(pos_embed_dist_kl_ll)) +\
                 # Metrics.cross_entropy(one, K.tanh(neg_embed_dist_kl_ll)) +\
-                # Metrics.cross_entropy(zero, K.tanh(pos_embed_dist_eclid_ll)) +\
+                # Metrics.cross_entropy(zero, pos_embed_dist_eclid_ll) +\
                 # Metrics.cross_entropy(one, K.tanh(neg_embed_dist_eclid_ll)) +\
 
             return loss
@@ -187,7 +192,7 @@ if __name__ == "__main__":
     traingen = MyTripletV1(X_train, y_train, n_cls)
     validgen = MyTripletV1(X_test, y_test, n_cls)
 
-    model.fit_generator(traingen, epochs=20, verbose=1, validation_data=validgen,
+    model.fit_generator(traingen, epochs=1000, verbose=1, validation_data=validgen,
                         callbacks=[EarlyStopping(patience=50)],
                         workers=8, use_multiprocessing=True)
 
