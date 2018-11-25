@@ -138,7 +138,7 @@ def joint_histogram(a, bins):
 
 def mutual_information(a, b, bins=256):
     mui = []
-    for i in range(a.shape[2]):
+    for i in range(a.shape[-1]):
         _a, _ = discretize_with_histogram(a.T[i], bins=bins)
         _b, _ = discretize_with_histogram(b.T[i], bins=bins)
         ab = np.stack([_a.flatten(), _b.flatten()])
@@ -155,58 +155,73 @@ def mutual_information(a, b, bins=256):
 
 # %% Testing
 if __name__ == "__main__":
-    size = 128
 
-    a = np.random.rand(28, 28, 3)
-    b = np.random.rand(28, 28, 3)
-
-    image3 = np.array([
-        [
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1]
-        ],
-        [
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1]
-        ],
-        [
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1]
-        ],
+    a = np.array([
+        [0.001, 0.5, 1.25, 0.75, 2.05],
+        [0.001, 0.5, 1.25, 0.75, 2.05],
+        [0.001, 0.5, 1.25, 0.75, 2.05],
     ])
 
-    image4 = np.array([
-        [
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0]
-        ],
-        [
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0]
-        ],
-        [
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0]
-        ],
-    ])
+    discrete, histogram = discretize_with_histogram(a, 2)
+    print(discrete, histogram)
 
-    print(mutual_information(image3.T, image3.T, 2))
-    print(mutual_information(image3.T, image4.T, 2))
+    joint_hist = joint_histogram(np.stack((discrete.flatten(), discrete.flatten())), 2)
+    print(joint_hist)
+
+    print(mutual_information(a.T, a.T, 2))
+    
+    # size = 128
+
+    # a = np.random.rand(28, 28, 3)
+    # b = np.random.rand(28, 28, 3)
+
+    # image3 = np.array([
+    #     [
+    #         [1, 1, 1, 1, 1],
+    #         [1, 1, 1, 1, 1],
+    #         [1, 1, 1, 1, 1],
+    #         [1, 1, 1, 1, 1],
+    #         [1, 1, 1, 1, 1]
+    #     ],
+    #     [
+    #         [1, 1, 1, 1, 1],
+    #         [1, 1, 1, 1, 1],
+    #         [1, 1, 1, 1, 1],
+    #         [1, 1, 1, 1, 1],
+    #         [1, 1, 1, 1, 1]
+    #     ],
+    #     [
+    #         [1, 1, 1, 1, 1],
+    #         [1, 1, 1, 1, 1],
+    #         [1, 1, 1, 1, 1],
+    #         [1, 1, 1, 1, 1],
+    #         [1, 1, 1, 1, 1]
+    #     ],
+    # ])
+
+    # image4 = np.array([
+    #     [
+    #         [0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0]
+    #     ],
+    #     [
+    #         [0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0]
+    #     ],
+    #     [
+    #         [0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0],
+    #         [0, 0, 0, 0, 0]
+    #     ],
+    # ])
+
+    # print(mutual_information(image3.T, image3.T, 2))
+    # print(mutual_information(image3.T, image4.T, 2))
