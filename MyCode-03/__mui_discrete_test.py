@@ -216,15 +216,31 @@ if __name__ == "__main__":
         _print(_func, np.array(image3)[0], np.array(image4)[0])
         _print(_func, np.array(image5)[0], np.array(image6)[0])
         _print(_func, np.array(image7)[0], np.array(image8)[0])
+        _print(_func, np.array(image3)[0], np.array(image3)[0])
+
+    def _sing_print_mu(title, _func):
+        print(title+'_single_channel')
+        _print(_func, np.array(image1)[:1], np.array(image1)[:1].copy())
+        _print(_func, np.array(image1)[:1], np.array(image2)[:1])
+        _print(_func, np.array(image3)[:1], np.array(image4)[:1])
+        _print(_func, np.array(image5)[:1], np.array(image6)[:1])
+        _print(_func, np.array(image7)[:1], np.array(image8)[:1])
+        _print(_func, np.array(image3)[:1], np.array(image3)[:1])
+
+    from NpMetrics import mutual_information
 
     print('_sing_print')
     _sing_print('_test01', _mui_test01)
     _sing_print('_test02', _mui_test02)
     _sing_print('_test03', _mui_test03)
-    
+    _sing_print_mu('mutual_information', lambda a,
+                   b: mutual_information(a.T, b.T, 2))
+
     print('\n_mult_print')
     _mult_print('_test01', _mui_test01)
     _mult_print('_test02', _mui_test02)
     _mult_print('_test03', _mui_test03)
+    _mult_print('mutual_information', lambda a,
+                b: mutual_information(a.T, b.T, 2))
 
     pass

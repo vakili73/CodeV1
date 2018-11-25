@@ -1,12 +1,12 @@
 import numpy as np
 # write to work with 1D array
-from __discretize_test01 import _discrete_with_histogram
-from __discretize_test01 import _joint_histogram
+from __discretize_test01 import discretize_with_histogram
+from __discretize_test01 import joint_histogram as _joint_histogram
 
 
 def _discrete_mutual_information(a, b, bins=2):
-    a, _ = _discrete_with_histogram(a, bins=bins)
-    b, _ = _discrete_with_histogram(b, bins=bins)
+    a, _ = discretize_with_histogram(a, bins=bins)
+    b, _ = discretize_with_histogram(b, bins=bins)
 
     ab = np.stack([a.flatten(), b.flatten()])
     joint_histogram = _joint_histogram(ab, bins=bins)

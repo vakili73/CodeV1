@@ -30,36 +30,131 @@ def joint_histogram(a, bins):
     return np.count_nonzero(_cond, axis=2)
 
 
+def mutual_information(a, b, bins=2):
+    a = a.transpose()
+    b = b.transpose()
+
+    mui = []
+    for i in range(a.shape[2]):
+        _a, _ = discretize_with_histogram(a.T[i], bins=bins)
+        _b, _ = discretize_with_histogram(b.T[i], bins=bins)
+        ab = np.stack([_a.flatten(), _b.flatten()])
+        joint_hist = joint_histogram(ab, bins=bins)
+        joint_proba = joint_hist/np.sum(joint_hist)
+        joint_proba = np.clip(joint_proba, 1e-7, 1)
+        a_proba = np.sum(joint_proba, axis=1)
+        b_proba = np.sum(joint_proba, axis=0)
+        a_proba = np.expand_dims(a_proba, axis=-1)
+        mui.append(np.sum(joint_hist * joint_proba *
+                          np.log(joint_proba / (a_proba*b_proba))))
+    return np.mean(mui)
+
+
 if __name__ == "__main__":
 
-    a = np.array([0.5, 0.5, 1., 1.5, 2., 2.5])
-    b = np.array([
-        [0., 0.5, 1., 1.5, 2., 2.5],
-        [0., 0.5, 1., 1.5, 2., 2.5],
-        [0., 0.5, 1., 1.5, 2., 2.5],
-    ])
-    c = np.array([
+    image1 = [
         [
-            [0., 0.5, 1., 1.5, 2., 2.5],
-            [0., 0.5, 1., 1.5, 2., 2.5],
-            [0., 0.5, 1., 1.5, 2., 2.5],
+            [0, 0, 1, 0, 0],
+            [0, 1, 0, 1, 0],
+            [1, 0, 0, 0, 1],
+            [0, 1, 0, 1, 0],
+            [0, 0, 1, 0, 0]
         ],
         [
-            [0., 0.5, 1., 1.5, 2., 2.5],
-            [0., 0.5, 1., 1.5, 2., 2.5],
-            [0., 0.5, 1., 1.5, 2., 2.5],
+            [0, 0, 1, 0, 0],
+            [0, 1, 0, 1, 0],
+            [1, 0, 0, 0, 1],
+            [0, 1, 0, 1, 0],
+            [0, 0, 1, 0, 0]
         ],
         [
-            [0., 0.5, 1., 1.5, 2., 2.5],
-            [0., 0.5, 1., 1.5, 2., 2.5],
-            [0., 0.5, 1., 1.5, 2., 2.5],
-        ],
-    ])
+            [0, 0, 1, 0, 0],
+            [0, 1, 0, 1, 0],
+            [1, 0, 0, 0, 1],
+            [0, 1, 0, 1, 0],
+            [0, 0, 1, 0, 0]
+        ]
+    ]
 
-    _min = np.min(a)
-    _max = np.max(a)
-    print(_discrete_with_histogram(a, 4))
-    print(_discrete_with_histogram(b, 4))
-    print(_discrete_with_histogram(c, 4))
+    image2 = [
+        [
+            [0, 0, 1, 0, 0],
+            [0, 1, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0]
+        ],
+        [
+            [0, 0, 1, 0, 0],
+            [0, 1, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0]
+        ],
+        [
+            [0, 0, 1, 0, 0],
+            [0, 1, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 1, 0, 0]
+        ]
+    ]
 
-    print(_obj_discrete_with_histogram(b))
+    image1 = np.array(image1)
+    image2 = np.array(image2)
+
+    print(mutual_information(image1, image2))
+    print(mutual_information(image1, image1.copy()))
+
+    image1 = [
+        [
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1]
+        ],
+        [
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1]
+        ],
+        [
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1]
+        ],
+    ]
+
+    image2 = [
+        [
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+        ],
+        [
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+        ],
+        [
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+        ],
+    ]
+
+    image1 = np.array(image1)
+    image2 = np.array(image2)
+
+    print(mutual_information(image1, image2))

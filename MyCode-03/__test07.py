@@ -44,7 +44,7 @@ if __name__ == "__main__":
     batch_01 = layers.BatchNormalization()(conv_01)
     active_01 = layers.Activation('relu')(batch_01)
 
-    conv_out_01 = layers.Flatten()(active_01)
+    conv_out_01 = active_01
 
     conv_02 = layers.Conv2D(32, (3, 3))(active_01)
     batch_02 = layers.BatchNormalization()(conv_02)
@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
     max2d_01 = layers.MaxPooling2D()(active_02)
 
-    conv_out_02 = layers.Flatten()(max2d_01)
+    conv_out_02 = max2d_01
 
     drop_01 = layers.Dropout(0.25)(max2d_01)
     flat_01 = layers.Flatten()(drop_01)
@@ -183,7 +183,7 @@ if __name__ == "__main__":
     ]
 
     cnn_metrics = [
-        (lambda a, b: Metrics.mutual_information(a, b), 'mutual_information'),
+        (lambda a, b: Metrics.mutual_information(a, b, 256), 'mutual_information'),
     ]
 
     def _analyze(X, y, title):

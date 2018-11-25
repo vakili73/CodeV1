@@ -137,25 +137,76 @@ def joint_histogram(a, bins):
 
 
 def mutual_information(a, b, bins=256):
-    a, _ = discretize_with_histogram(a, bins=bins)
-    b, _ = discretize_with_histogram(b, bins=bins)
-    ab = np.stack([a.flatten(), b.flatten()])
-    joint_hist = joint_histogram(ab, bins=bins)
-    joint_proba = joint_hist/np.sum(joint_hist)
-    joint_proba = np.clip(joint_proba, 1e-7, 1)
-    a_proba = np.sum(joint_proba, axis=1)
-    b_proba = np.sum(joint_proba, axis=0)
-    b_proba = np.expand_dims(b_proba, axis=-1)
-    mui = joint_hist * joint_proba *\
-        np.log(joint_proba / (a_proba*b_proba))
-    return np.sum(mui)
+    mui = []
+    for i in range(a.shape[2]):
+        _a, _ = discretize_with_histogram(a.T[i], bins=bins)
+        _b, _ = discretize_with_histogram(b.T[i], bins=bins)
+        ab = np.stack([_a.flatten(), _b.flatten()])
+        joint_hist = joint_histogram(ab, bins=bins)
+        joint_proba = joint_hist/np.sum(joint_hist)
+        joint_proba = np.clip(joint_proba, 1e-7, 1)
+        a_proba = np.sum(joint_proba, axis=1)
+        b_proba = np.sum(joint_proba, axis=0)
+        a_proba = np.expand_dims(a_proba, axis=-1)
+        mui.append(np.sum(joint_hist * joint_proba *
+                          np.log(joint_proba / (a_proba*b_proba))))
+    return np.mean(mui)
 
 
 # %% Testing
 if __name__ == "__main__":
     size = 128
 
-    a = np.random.rand(size)
-    b = np.random.rand(size)
+    a = np.random.rand(28, 28, 3)
+    b = np.random.rand(28, 28, 3)
 
-    print(entropy(np.array([1., 0.75, 0.5, 0.25, 0.])))
+    image3 = np.array([
+        [
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1]
+        ],
+        [
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1]
+        ],
+        [
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1]
+        ],
+    ])
+
+    image4 = np.array([
+        [
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+        ],
+        [
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+        ],
+        [
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0]
+        ],
+    ])
+
+    print(mutual_information(image3.T, image3.T, 2))
+    print(mutual_information(image3.T, image4.T, 2))
