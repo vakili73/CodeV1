@@ -1,11 +1,22 @@
 import numpy as np
+import tensorflow as tf
+from keras import backend as K
 
 
-def _round(x, decimals=0):
-    multiplier = 10**decimals
-    return np.round(x * multiplier) / multiplier
+def body(i):
+    a = tf.constant(1, dtype=tf.int32)
+    x.write(i, a)
+    return tf.add(i, 1)
 
 
-a = np.array([0.15, 2.5, 0.51])
+def condition(i):
+    return tf.less(i, 128)
 
-print(_round(a, 1))
+
+with tf.Session():
+    x = tf.TensorArray(tf.int32, 128)
+    i = tf.constant(0)
+    tf.global_variables_initializer().run()
+    _i = tf.while_loop(condition, body, [i])
+    print(_i.eval())
+    print(x.stack().eval())

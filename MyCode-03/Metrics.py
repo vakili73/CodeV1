@@ -137,21 +137,19 @@ def joint_histogram(tensor, bins):
 
 
 def mutual_information(tensor_a, tensor_b, bins=256):
-    channel = tensor_a.shape[-1]
-    mui = K.variable(0.0, dtype=K.floatx())
-    for i in range(channel):
-        _a, _ = discretize_with_histogram(K.transpose(tensor_a)[i], bins=bins)
-        _b, _ = discretize_with_histogram(K.transpose(tensor_b)[i], bins=bins)
-        ab = K.stack([K.flatten(_a), K.flatten(_b)])
-        joint_hist = K.cast(joint_histogram(ab, bins=bins), dtype=K.floatx())
-        joint_proba = joint_hist/K.sum(joint_hist)
-        joint_proba = K.clip(joint_proba, 1e-7, 1)
-        a_proba = K.sum(joint_proba, axis=1)
-        b_proba = K.sum(joint_proba, axis=0)
-        a_proba = K.expand_dims(a_proba, axis=-1)
-        mui = mui + K.sum(joint_hist * joint_proba *
-                          K.log(joint_proba / (a_proba*b_proba)))
-    return mui/K.constant(channel.value)
+    channel = tensor_a.shape[-1].value
+    _a, _ = discretize_with_histogram(K.transpose(tensor_a)[i], bins=bins)
+    _b, _ = discretize_with_histogram(K.transpose(tensor_b)[i], bins=bins)
+    ab = K.stack([K.flatten(_a), K.flatten(_b)])
+    joint_hist = K.cast(joint_histogram(ab, bins=bins), dtype=K.floatx())
+    joint_proba = joint_hist/K.sum(joint_hist)
+    joint_proba = K.clip(joint_proba, 1e-7, 1)
+    a_proba = K.sum(joint_proba, axis=1)
+    b_proba = K.sum(joint_proba, axis=0)
+    a_proba = K.expand_dims(a_proba, axis=-1)
+    mui = K.sum(joint_hist * joint_proba *
+                K.log(joint_proba / (a_proba*b_proba)))
+    return mui
 
 
 # %% Testing

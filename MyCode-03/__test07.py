@@ -144,21 +144,32 @@ if __name__ == "__main__":
     print(np.std(X_03))
     print(np.std(X_04), '\n\n')
 
-    def _dist(func, X, y):
-
+    def _cnn_dist(func, X, y):
         @ray.remote
-        def function(X, y):
-            return func(X, y)
-
+        def function(a, b):
+            avg = []
+            for i in range(a.shape[-1]):
+                avg.append(func(a[:, :, i],
+                                b[:, :, i]))
+            return np.mean(avg)
         dist = np.zeros((len(y), len(y))).tolist()
         for i in range(len(y)):
             for j in range(len(y)):
                 dist[i][j] = function.remote(X[i], X[j])
-
         for i in range(len(y)):
-            # start = time.time()
             dist[i] = ray.get(dist[i])
-            # print(time.time()-start, '\n')
+        return np.array(dist)
+
+    def _dist(func, X, y):
+        @ray.remote
+        def function(a, b):
+            return func(a, b)
+        dist = np.zeros((len(y), len(y))).tolist()
+        for i in range(len(y)):
+            for j in range(len(y)):
+                dist[i][j] = function.remote(X[i], X[j])
+        for i in range(len(y)):
+            dist[i] = ray.get(dist[i])
         return np.array(dist)
 
     metrics = [
@@ -180,10 +191,14 @@ if __name__ == "__main__":
             a, b), 'softmax_cross_entropy_loss'),
         (lambda a, b: Metrics.logistic_loss(a, b), 'logistic_loss'),
         (lambda a, b: Metrics.softmax_logistic_loss(a, b), 'softmax_logistic_loss'),
+        (lambda a, b: Metrics.softmax_logistic_loss(a, b), 'softmax_logistic_loss'),
     ]
 
     cnn_metrics = [
-        (lambda a, b: Metrics.mutual_information(a, b, 256), 'mutual_information'),
+        # (lambda a, b: Metrics.mutual_information(a, b, 256), 'mutual_information'),
+        # (lambda a, b: np.sum(np.matrix(a)*np.matrix(b)), 'my_metric_v01'),
+        (lambda a, b: np.sum(((np.matrix(a)*np.matrix(b))-(np.matrix(a)*np.matrix(a))) +
+                             ((np.matrix(b)*np.matrix(a))-(np.matrix(b)*np.matrix(b)))), 'my_metric_v02'),
     ]
 
     def _analyze(X, y, title):
@@ -195,15 +210,18 @@ if __name__ == "__main__":
             np.savetxt('./dists/'+title+'_'+name+'.csv', dist, delimiter=',')
 
     def _cnn_analyze(X, y, title):
+        # X = np.tanh(X)
         for func, name in cnn_metrics:
             print(title+'_'+name)
             start = time.time()
-            dist = _dist(func, X, y)
+            dist = _cnn_dist(func, X, y)
             print(time.time()-start, '\n')
             np.savetxt('./dists/'+title+'_'+name+'.csv', dist, delimiter=',')
 
-    _cnn_analyze(X_01, y_01, '01')
-    _cnn_analyze(X_02, y_02, '02')
+    # _cnn_analyze(X_01, y_01, '01')
+    # _cnn_analyze(X_02, y_02, '02')
+    _analyze(X_01, y_01, '01')
+    _analyze(X_02, y_02, '02')
     _analyze(X_03, y_03, '03')
     _analyze(X_04, y_04, '04')
 

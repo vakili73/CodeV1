@@ -137,20 +137,18 @@ def joint_histogram(a, bins):
 
 
 def mutual_information(a, b, bins=256):
-    mui = []
-    for i in range(a.shape[-1]):
-        _a, _ = discretize_with_histogram(a.T[i], bins=bins)
-        _b, _ = discretize_with_histogram(b.T[i], bins=bins)
-        ab = np.stack([_a.flatten(), _b.flatten()])
-        joint_hist = joint_histogram(ab, bins=bins)
-        joint_proba = joint_hist/np.sum(joint_hist)
-        joint_proba = np.clip(joint_proba, 1e-7, 1)
-        a_proba = np.sum(joint_proba, axis=1)
-        b_proba = np.sum(joint_proba, axis=0)
-        a_proba = np.expand_dims(a_proba, axis=-1)
-        mui.append(np.sum(joint_hist * joint_proba *
-                          np.log(joint_proba / (a_proba*b_proba))))
-    return np.mean(mui)
+    _a, _ = discretize_with_histogram(a, bins=bins)
+    _b, _ = discretize_with_histogram(b, bins=bins)
+    ab = np.stack([_a.flatten(), _b.flatten()])
+    joint_hist = joint_histogram(ab, bins=bins)
+    joint_proba = joint_hist/np.sum(joint_hist)
+    joint_proba = np.clip(joint_proba, 1e-7, 1)
+    a_proba = np.sum(joint_proba, axis=1)
+    b_proba = np.sum(joint_proba, axis=0)
+    a_proba = np.expand_dims(a_proba, axis=-1)
+    mui = np.sum(joint_hist * joint_proba *
+                 np.log(joint_proba / (a_proba*b_proba)))
+    return mui
 
 
 # %% Testing
@@ -165,11 +163,12 @@ if __name__ == "__main__":
     discrete, histogram = discretize_with_histogram(a, 2)
     print(discrete, histogram)
 
-    joint_hist = joint_histogram(np.stack((discrete.flatten(), discrete.flatten())), 2)
+    joint_hist = joint_histogram(
+        np.stack((discrete.flatten(), discrete.flatten())), 2)
     print(joint_hist)
 
     print(mutual_information(a.T, a.T, 2))
-    
+
     # size = 128
 
     # a = np.random.rand(28, 28, 3)
