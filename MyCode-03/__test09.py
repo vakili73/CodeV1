@@ -32,6 +32,8 @@ from sklearn.neighbors import KNeighborsClassifier
 
 if __name__ == "__main__":
 
+    from __test_my_layer import MyLayerV1
+
     e_len = 128
     batch_size = 128
 
@@ -40,7 +42,7 @@ if __name__ == "__main__":
     n_cls = db['n_cls']
 
     X_train, X_test, y_train, y_test = get_fewshot(
-        *load_data('fashion'), shot=15)
+        *load_data('fashion'), shot=None)
 
     X_train, y_train = shuffle(X_train, y_train)
     X_test, y_test = shuffle(X_test, y_test)
@@ -55,16 +57,16 @@ if __name__ == "__main__":
     batch_01 = layers.BatchNormalization()(conv_01)
     active_01 = layers.Activation('relu')(batch_01)
 
-    _01_out = layers.Flatten()(active_01)
-    conv1_out = layers.Dense(128, activation='sigmoid')(_01_out)
+    _01_out = MyLayerV1(8, 'sigmoid')(active_01)
+    conv1_out = layers.Flatten()(_01_out) # 128*32
 
     conv_02 = layers.Conv2D(32, (3, 3))(active_01)
     batch_02 = layers.BatchNormalization()(conv_02)
     active_02 = layers.Activation('relu')(batch_02)
     max2d_01 = layers.MaxPooling2D()(active_02)
 
-    _02_out = layers.Flatten()(max2d_01)
-    conv2_out = layers.Dense(128, activation='sigmoid')(_02_out)
+    _02_out = MyLayerV1(128, 'sigmoid')(max2d_01)
+    conv2_out = layers.Flatten()(_02_out) # 128*32
 
     drop_01 = layers.Dropout(0.25)(max2d_01)
     flat_01 = layers.Flatten()(drop_01)
@@ -114,14 +116,14 @@ if __name__ == "__main__":
     def dual_loss(n_cls):
         def _loss(y_true, y_pred):
 
-            c1_len = 128
+            c1_len = 8*32
             conv1_anc = y_pred[:, :c1_len]
             conv1_pos = y_pred[:, c1_len:(c1_len*2)]
             conv1_neg = y_pred[:, (c1_len*2):(c1_len*3)]
 
             s_len = c1_len*3
 
-            c2_len = 128
+            c2_len = 128*32
             conv2_anc = y_pred[:, s_len:(s_len+c2_len)]
             conv2_pos = y_pred[:, (s_len+c2_len):(s_len+(c2_len*2))]
             conv2_neg = y_pred[:, (s_len+(c2_len*2)):(s_len+(c2_len*3))]
@@ -143,12 +145,10 @@ if __name__ == "__main__":
             tru_neg = y_true[:, (n_cls*2):(n_cls*3)]
 
             def _layer_loss(anc, pos, neg):
-                # cosine_distance - cosine_similarity
-                pos_dist_cosine = Metrics.cosine_distance(anc, pos)
-                neg_simi_cosine = Metrics.cosine_similarity(anc, neg)
                 # squared_l2_distance
                 pos_dist_l2 = Metrics.squared_l2_distance(anc, pos)
                 neg_dist_l2 = Metrics.squared_l2_distance(anc, neg)
+
                 # kullback_leibler
                 pos_dist_kl = Metrics.kullback_leibler(anc, pos) +\
                     Metrics.kullback_leibler(pos, anc)
@@ -160,8 +160,6 @@ if __name__ == "__main__":
                     Metrics.entropy(K.tanh(neg_dist_kl)) +\
                     Metrics.entropy(K.tanh(pos_dist_l2)) +\
                     Metrics.entropy(K.tanh(neg_dist_l2)) +\
-                    Metrics.cross_entropy(zero, pos_dist_cosine) +\
-                    Metrics.cross_entropy(zero, neg_simi_cosine) +\
                     Metrics.cross_entropy(zero, K.tanh(pos_dist_kl)) +\
                     Metrics.cross_entropy(one, K.tanh(neg_dist_kl)) +\
                     Metrics.cross_entropy(zero, K.tanh(pos_dist_l2)) +\
@@ -171,12 +169,12 @@ if __name__ == "__main__":
             zero = K.constant(0, dtype=K.floatx())
             one = K.constant(1, dtype=K.floatx())
 
+                # _layer_loss(conv1_anc, conv1_pos, conv1_neg) +\
+                # \
             loss = \
-                _layer_loss(embed_anc, embed_pos, embed_neg) +\
-                \
-                _layer_loss(conv1_anc, conv1_pos, conv1_neg) +\
-                \
                 _layer_loss(conv2_anc, conv2_pos, conv2_neg) +\
+                \
+                _layer_loss(embed_anc, embed_pos, embed_neg) +\
                 \
                 Metrics.cross_entropy(tru_anc, out_anc) +\
                 Metrics.cross_entropy(tru_pos, out_pos) +\
@@ -187,14 +185,14 @@ if __name__ == "__main__":
 
     def my_accu(y_true, y_pred):
 
-        c1_len = 128
+        c1_len = 8*32
         conv1_anc = y_pred[:, :c1_len]
         conv1_pos = y_pred[:, c1_len:(c1_len*2)]
         conv1_neg = y_pred[:, (c1_len*2):(c1_len*3)]
 
         s_len = c1_len*3
 
-        c2_len = 128
+        c2_len = 128*32
         conv2_anc = y_pred[:, s_len:(s_len+c2_len)]
         conv2_pos = y_pred[:, (s_len+c2_len):(s_len+(c2_len*2))]
         conv2_neg = y_pred[:, (s_len+(c2_len*2)):(s_len+(c2_len*3))]
