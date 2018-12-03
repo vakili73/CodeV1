@@ -40,7 +40,7 @@ if __name__ == "__main__":
     n_cls = db['n_cls']
 
     X_train, X_test, y_train, y_test = get_fewshot(
-        *load_data('fashion'), shot=15)
+        *load_data('fashion'), shot=None)
 
     X_train, y_train = shuffle(X_train, y_train)
     X_test, y_test = shuffle(X_test, y_test)
@@ -180,7 +180,11 @@ if __name__ == "__main__":
                 \
                 Metrics.cross_entropy(tru_anc, out_anc) +\
                 Metrics.cross_entropy(tru_pos, out_pos) +\
-                Metrics.cross_entropy(tru_neg, out_neg)
+                Metrics.cross_entropy(tru_neg, out_neg) +\
+                \
+                Metrics.cross_entropy(zero, Metrics.cosine_distance(tru_anc, out_anc)) +\
+                Metrics.cross_entropy(zero, Metrics.cosine_distance(tru_pos, out_pos)) +\
+                Metrics.cross_entropy(zero, Metrics.cosine_distance(tru_neg, out_neg))
             return loss
 
         return _loss
