@@ -23,6 +23,8 @@ from tensorflow.keras import layers
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.callbacks import EarlyStopping
 
+from sklearn.svm import SVC
+from sklearn.neighbors import DistanceMetric
 from sklearn.neighbors import KNeighborsClassifier
 
 if __name__ == "__main__":
@@ -220,14 +222,14 @@ if __name__ == "__main__":
 
     # _cnn_analyze(X_01, y_01, '01')
     # _cnn_analyze(X_02, y_02, '02')
-    _analyze(X_01, y_01, '01')
-    _analyze(X_02, y_02, '02')
+    # _analyze(X_01, y_01, '01')
+    # _analyze(X_02, y_02, '02')
     _analyze(X_03, y_03, '03')
     _analyze(X_04, y_04, '04')
 
     # %% kNN Analaysis
 
-    def _kNN_analyze(out_model):
+    def _kNN_analyze_v1(out_model):
         train_embed = out_model.predict(X_train)
         test_embed = out_model.predict(X_test)
 
@@ -248,7 +250,66 @@ if __name__ == "__main__":
         print('knn top 3 accu: %f' % (top_k_accuracy(y_score, y_test, 3)*100))
         print('knn top 5 accu: %f' % (top_k_accuracy(y_score, y_test, 5)*100))
 
+    def _kNN_analyze_v2(out_model):
+        train_embed = out_model.predict(X_train)
+        train_embed = train_embed/np.sqrt(np.sum(np.square(train_embed), axis=-1, keepdims=True))
+        test_embed = out_model.predict(X_test)
+        test_embed = test_embed/np.sqrt(np.sum(np.square(test_embed), axis=-1, keepdims=True))
+
+        def myMetric(a, b):
+            return 1.0-np.sum(a * b)
+
+        clf = KNeighborsClassifier(metric='pyfunc', metric_params={'func': myMetric},
+                                   weights='uniform', n_neighbors=1, n_jobs=8)
+        clf.fit(train_embed, y_train)
+
+        y_score = clf.predict_proba(test_embed)
+        print('1 neighbor knn top 1 accu: %f' %
+              (top_k_accuracy(y_score, y_test, 1)*100))
+
+        clf = KNeighborsClassifier(metric='pyfunc', metric_params={'func': myMetric},
+                                   weights='distance', n_neighbors=9, n_jobs=8)
+        clf.fit(train_embed, y_train)
+
+        y_score = clf.predict_proba(test_embed)
+        print('knn top 1 accu: %f' % (top_k_accuracy(y_score, y_test, 1)*100))
+        print('knn top 3 accu: %f' % (top_k_accuracy(y_score, y_test, 3)*100))
+        print('knn top 5 accu: %f' % (top_k_accuracy(y_score, y_test, 5)*100))
+
     print('out_03_model')
-    _kNN_analyze(out_03_model)
+    _kNN_analyze_v1(out_03_model)
     print('\norg_model')
-    _kNN_analyze(org_model)
+    _kNN_analyze_v1(org_model)
+    print('\nv2 cosine distance\nout_03_model')
+    _kNN_analyze_v2(out_03_model)
+    print('\norg_model')
+    _kNN_analyze_v2(org_model)
+
+    def _svm_v1(out_model):
+        train_embed = out_model.predict(X_train)
+        test_embed = out_model.predict(X_test)
+
+        def _report(clf):
+            clf.fit(train_embed, y_train)
+            y_score = clf.predict_proba(test_embed)
+            print('top 1 accu: %f' % (top_k_accuracy(y_score, y_test, 1)*100))
+            print('top 3 accu: %f' % (top_k_accuracy(y_score, y_test, 3)*100))
+            print('top 5 accu: %f' % (top_k_accuracy(y_score, y_test, 5)*100))
+
+        print('linear kernel')
+        clf = SVC(kernel='linear', gamma='scale', probability=True)  # Linear Kernel
+        _report(clf)
+        print('rbf kernel')
+        clf = SVC(kernel='rbf', gamma='scale', probability=True)  # Linear Kernel
+        _report(clf)
+        print('poly 3 kernel')
+        clf = SVC(kernel='poly', gamma='scale', probability=True)  # Linear Kernel
+        _report(clf)
+        print('sigmoid kernel')
+        clf = SVC(kernel='sigmoid', gamma='scale', probability=True)  # Linear Kernel
+        _report(clf)
+
+    print('out_03_model')
+    _svm_v1(out_03_model)
+    print('\norg_model')
+    _svm_v1(org_model)

@@ -172,11 +172,11 @@ if __name__ == "__main__":
             one = K.constant(1, dtype=K.floatx())
 
             loss = \
-                _layer_loss(embed_anc, embed_pos, embed_neg) +\
-                \
                 _layer_loss(conv1_anc, conv1_pos, conv1_neg) +\
                 \
                 _layer_loss(conv2_anc, conv2_pos, conv2_neg) +\
+                \
+                _layer_loss(embed_anc, embed_pos, embed_neg) +\
                 \
                 Metrics.cross_entropy(tru_anc, out_anc) +\
                 Metrics.cross_entropy(tru_pos, out_pos) +\
