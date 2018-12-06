@@ -15,9 +15,9 @@ class SchemaV02(BaseSchema):
 
     def buildConventionalV1(self, shape, n_cls):
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dense(512, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(256, activation='relu'))
+        model.add(layers.Dense(256, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
         layer = layers.Dense(128, activation='sigmoid')
         model.add(layer)
@@ -57,9 +57,9 @@ class SchemaV02(BaseSchema):
             https://doi.org/10.1017/CBO9781107415324.004
         """
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dense(512, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(256, activation='relu'))
+        model.add(layers.Dense(256, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
         model.add(layers.Dense(128, activation='sigmoid'))
 
@@ -101,9 +101,9 @@ class SchemaV02(BaseSchema):
             Innull 2006 Jun 17 (pp. 1735-1742). IEEE.
         """
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dense(512, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(256, activation='relu'))
+        model.add(layers.Dense(256, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
         model.add(layers.Dense(128, activation='sigmoid'))
 
@@ -143,9 +143,9 @@ class SchemaV02(BaseSchema):
         https://doi.org/10.1007/978-3-319-24261-3_7
         """
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dense(512, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(256, activation='relu'))
+        model.add(layers.Dense(256, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
         model.add(layers.Dense(128, activation='sigmoid'))
 
@@ -199,9 +199,9 @@ class SchemaV02(BaseSchema):
         https://doi.org/10.1109/CVPR.2015.7298682
         """
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dense(512, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(256, activation='relu'))
+        model.add(layers.Dense(256, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
         model.add(layers.Dense(128, activation='sigmoid'))
 
@@ -248,10 +248,10 @@ class SchemaV02(BaseSchema):
 
     def buildMyModelV1(self, shape, n_cls):
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dense(512, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
         layer03 = model.output
-        model.add(layers.Dense(256, activation='relu'))
+        model.add(layers.Dense(256, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
         layer02 = model.output
         model.add(layers.Dense(128, activation='sigmoid'))
@@ -320,10 +320,10 @@ class SchemaV02(BaseSchema):
         model.add(layers.Activation('relu'))
         model.add(layers.Dropout(0.25))
         model.add(layers.Flatten())
-        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dense(512, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
         layer03 = model.output
-        model.add(layers.Dense(256, activation='relu'))
+        model.add(layers.Dense(256, activation='sigmoid'))
         model.add(layers.Dropout(0.25))
         layer02 = model.output
         model.add(layers.Dense(128, activation='sigmoid'))

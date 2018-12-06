@@ -51,14 +51,19 @@ def triplet(alpha=0.2):
     return _loss
 
 
-def my_loss_v1(n_cls, e_len=128):
+def my_loss(n_cls, ll_len, e_len=128):
 
     def _loss(y_true, y_pred):
-        embed_a = y_pred[:, :e_len]
-        embed_p = y_pred[:, e_len:(e_len*2)]
-        embed_n = y_pred[:, (e_len*2):(e_len*3)]
 
-        out_len = (e_len*3)
+        embeds_apn = []
+        for i in range(ll_len):
+            _len = i*(e_len*3)
+            embed_a = y_pred[:, _len:(_len+e_len)]
+            embed_p = y_pred[:, (_len+e_len):(_len+(e_len*2))]
+            embed_n = y_pred[:, (_len+(e_len*2)):(_len+(e_len*3))]
+            embeds_apn.append((embed_a, embed_p, embed_n))
+
+        out_len = ll_len*(e_len*3)
 
         output_a = y_pred[:, out_len:(out_len+n_cls)]
         output_p = y_pred[:, (out_len+n_cls):(out_len+(n_cls*2))]
@@ -96,13 +101,17 @@ def my_loss_v1(n_cls, e_len=128):
                 Metrics.cross_entropy(one, K.tanh(neg_dist_l2))
             return _loss
 
-        loss = __loss(embed_a, embed_p, embed_n) +\
+        loss = 0
+        for i in range(ll_len):
+            loss += __loss(*embeds_apn[i])
+        loss += \
             Metrics.cross_entropy(true_a, output_a) +\
             Metrics.cross_entropy(true_p, output_p) +\
             Metrics.cross_entropy(true_n, output_n) +\
             Metrics.cross_entropy(zero, Metrics.cosine_distance(true_a, output_a)) +\
             Metrics.cross_entropy(zero, Metrics.cosine_distance(true_p, output_p)) +\
-            Metrics.cross_entropy(zero, Metrics.cosine_distance(true_n, output_n))
+            Metrics.cross_entropy(
+                zero, Metrics.cosine_distance(true_n, output_n))
         return loss
-    
+
     return _loss

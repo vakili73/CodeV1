@@ -17,12 +17,10 @@ from sklearn.decomposition import TruncatedSVD, PCA
 from tensorflow.keras import losses
 from tensorflow.keras.utils import to_categorical
 
-figsize = (19.20, 10.80)
-
 
 # %% Utils function
 
-def plot_pca_reduction(embeddings, targets, title, save=True,
+def plot_pca_reduction(embeddings, targets, title, save=True, figsize=(19.20, 10.80),
                        base_path='./logs/vizplots') -> plt.Figure:
     X = PCA(n_components=3).fit_transform(embeddings)
     plt.clf()
@@ -41,7 +39,7 @@ def plot_pca_reduction(embeddings, targets, title, save=True,
     return plt.gcf()
 
 
-def plot_lsa_reduction(embeddings, targets, title, save=True,
+def plot_lsa_reduction(embeddings, targets, title, save=True, figsize=(19.20, 10.80),
                        base_path='./logs/vizplots') -> plt.Figure:
     X = TruncatedSVD(n_components=3).fit_transform(embeddings)
     plt.clf()
@@ -65,7 +63,7 @@ def plot_reduction(**kwargs):
     plot_pca_reduction(**kwargs)
 
 
-def plot_lr_curve(history, title, save=True,
+def plot_lr_curve(history, title, save=True, figsize=(19.20, 10.80),
                   base_path='./logs/lrcurves') -> plt.Figure:
     plt.clf()
     plt.gcf().set_size_inches(*figsize)
@@ -89,7 +87,7 @@ def plot_lr_curve(history, title, save=True,
     return plt.gcf()
 
 
-def plot_roc_curve(title, y_test, y_score, n_cls, save=True,
+def plot_roc_curve(title, y_test, y_score, n_cls, save=True, figsize=(19.20, 10.80),
                    base_path='./logs/roccurves') -> plt.Figure:
     fpr = dict()
     tpr = dict()
@@ -146,7 +144,7 @@ def plot_roc_curve(title, y_test, y_score, n_cls, save=True,
 
 
 def plot_confusion_matrix(cm, title, classes, save=True, normalize=True,
-                          base_path='./logs/cmcurves') -> plt.Figure:
+                          base_path='./logs/cmcurves', figsize=(19.20, 10.80)) -> plt.Figure:
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
         print("Normalized confusion matrix")
@@ -196,12 +194,3 @@ def load_datagen(datagen):
     module = __import__('Generator')
     datagen = getattr(module, datagen)
     return datagen
-
-
-def report_classification(y_true, y_score, n_cls, title):
-    print(title)
-    y_pred = np.argmax(y_score, axis=-1)
-    print(classification_report(y_true, y_pred, digits=5))
-    # plot_roc_curve(title, to_categorical(y_true, n_cls), y_score, n_cls)
-    # cm = confusion_matrix(y_true, y_pred)
-    # plot_confusion_matrix(cm, title, np.unique(y_true))

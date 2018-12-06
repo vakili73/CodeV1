@@ -15,6 +15,8 @@ class SchemaV03(BaseSchema):
 
     def buildConventionalV1(self, shape, n_cls):
         model = self.build(shape)
+        model.add(layers.Dense(512, activation='sigmoid'))
+        model.add(layers.Dropout(0.5))
         layer = layers.Dense(128, activation='sigmoid')
         model.add(layer)
         model.add(layers.Dropout(0.5))
@@ -28,6 +30,8 @@ class SchemaV03(BaseSchema):
 
     def buildConventionalV2(self, shape, n_cls):
         model = self.build(shape)
+        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dropout(0.5))
         layer = layers.Dense(128, activation='relu')
         model.add(layer)
         model.add(layers.Dropout(0.5))
@@ -49,6 +53,8 @@ class SchemaV03(BaseSchema):
             https://doi.org/10.1017/CBO9781107415324.004
         """
         model = self.build(shape)
+        model.add(layers.Dense(512, activation='sigmoid'))
+        model.add(layers.Dropout(0.5))
         model.add(layers.Dense(128, activation='sigmoid'))
 
         self.extract_layer = 'dense_128_sigmoid'
@@ -89,6 +95,8 @@ class SchemaV03(BaseSchema):
             Innull 2006 Jun 17 (pp. 1735-1742). IEEE.
         """
         model = self.build(shape)
+        model.add(layers.Dense(512, activation='sigmoid'))
+        model.add(layers.Dropout(0.5))
         model.add(layers.Dense(128, activation='sigmoid'))
 
         self.extract_layer = 'dense_128_sigmoid'
@@ -127,6 +135,8 @@ class SchemaV03(BaseSchema):
         https://doi.org/10.1007/978-3-319-24261-3_7
         """
         model = self.build(shape)
+        model.add(layers.Dense(512, activation='sigmoid'))
+        model.add(layers.Dropout(0.5))
         model.add(layers.Dense(128, activation='sigmoid'))
 
         self.extract_layer = 'dense_128_sigmoid'
@@ -179,6 +189,8 @@ class SchemaV03(BaseSchema):
         https://doi.org/10.1109/CVPR.2015.7298682
         """
         model = self.build(shape)
+        model.add(layers.Dense(512, activation='sigmoid'))
+        model.add(layers.Dropout(0.5))
         model.add(layers.Dense(128, activation='sigmoid'))
 
         self.extract_layer = 'dense_128_sigmoid'
@@ -224,58 +236,115 @@ class SchemaV03(BaseSchema):
 
     def buildMyModelV1(self, shape, n_cls):
         model = self.build(shape)
-        model.add(layers.Dense(128, activation='sigmoid'))
-
-        self.extract_layer = 'dense_128_sigmoid'
-        self.input = model.input
-        self.output = model.output
-
+        model.add(layers.Dense(512, activation='sigmoid'))
         model.add(layers.Dropout(0.5))
+        layer02 = model.output
+        model.add(layers.Dense(128, activation='sigmoid'))
+        model.add(layers.Dropout(0.5))
+        layer01 = model.output
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self.myModel = model
+        self.input = model.input
+        self.output = [layer01, model.output]
 
         input_a = layers.Input(shape=shape)
         input_p = layers.Input(shape=shape)
-        inputs_n = []
-        for i in range(n_cls-1):
-            inputs_n.append(layers.Input(shape=shape))
+        input_n = layers.Input(shape=shape)
 
+        layer02_model = Model(inputs=model.input, outputs=layer02)
+        layer02_a = layer02_model(input_a)
+        layer02_p = layer02_model(input_p)
+        layer02_n = layer02_model(input_n)
+
+        embed_model = Model(inputs=model.input, outputs=layer01)
+        embed_a = embed_model(input_a)
+        embed_p = embed_model(input_p)
+        embed_n = embed_model(input_n)
+
+        output_a = model(input_a)
         output_p = model(input_p)
-        outputs_n = []
-        for i in range(n_cls-1):
-            outputs_n.append(model(inputs_n[i]))
+        output_n = model(input_n)
 
-        embed_model = self.getModel()
-        embedded_a = embed_model(input_a)
-        embedded_p = embed_model(input_p)
-        embeddeds_n = []
-        for i in range(n_cls-1):
-            embeddeds_n.append(embed_model(inputs_n[i]))
+        concat = layers.Concatenate()(
+            [layer02_a, layer02_p, layer02_n,
+             embed_a, embed_p, embed_n,
+             output_a, output_p, output_n])
 
-        def output_shape(input_shape):
-            return input_shape[0], 1
+        self.model = Model(
+            inputs=[input_a, input_p, input_n], outputs=concat)
+        return self
 
-        def cosine_distance(tensor_a, tensor_b):
-            l2_norm_a = K.l2_normalize(tensor_a, axis=-1)
-            l2_norm_b = K.l2_normalize(tensor_b, axis=-1)
-            return 1-K.sum(l2_norm_a * l2_norm_b, axis=-1,
-                           keepdims=True)
+    def buildMyModelV2(self, shape, n_cls):
+        model = Sequential()
+        model.add(layers.Conv2D(32, (3, 3), input_shape=shape))
+        model.add(layers.BatchNormalization())
+        model.add(layers.Activation('relu'))
+        model.add(layers.Conv2D(32, (3, 3)))
+        model.add(layers.BatchNormalization())
+        model.add(layers.Activation('relu'))
+        model.add(layers.MaxPooling2D())
+        layer04 = layers.Dense(128, activation='sigmoid')(
+            layers.Flatten()(model.output))
+        model.add(layers.Dropout(0.25))
+        model.add(layers.Conv2D(64, (3, 3), padding='same'))
+        model.add(layers.BatchNormalization())
+        model.add(layers.Activation('relu'))
+        model.add(layers.Conv2D(64, (3, 3)))
+        model.add(layers.BatchNormalization())
+        model.add(layers.Activation('relu'))
+        model.add(layers.MaxPooling2D())
+        model.add(layers.Dropout(0.25))
+        layer03 = layers.Dense(128, activation='sigmoid')(
+            layers.Flatten()(model.output))
+        model.add(layers.Flatten())
+        model.add(layers.Dense(512, activation='sigmoid'))
+        model.add(layers.Dropout(0.5))
+        layer02 = model.output
+        model.add(layers.Dense(128, activation='sigmoid'))
+        model.add(layers.Dropout(0.5))
+        layer01 = model.output
+        model.add(layers.Dense(n_cls, activation='softmax'))
 
-        distance_layer = layers.Lambda(
-            lambda tensors: cosine_distance(tensors[0], tensors[1]),
-            output_shape=output_shape)
-        pos_distance = distance_layer([embedded_a, embedded_p])
+        self.input = model.input
+        self.output = [layer01, model.output]
 
-        neg_distances = []
-        for item in embeddeds_n:
-            neg_distances.append(distance_layer([embedded_a, item]))
+        input_a = layers.Input(shape=shape)
+        input_p = layers.Input(shape=shape)
+        input_n = layers.Input(shape=shape)
 
-        dist_concat = layers.Concatenate(
-            axis=-1)([pos_distance, *neg_distances])
+        layer04_model = Model(inputs=model.input, outputs=layer04.output)
+        layer04_a = layer04_model(input_a)
+        layer04_p = layer04_model(input_p)
+        layer04_n = layer04_model(input_n)
 
-        self.model = Model(inputs=[input_a, input_p, *inputs_n],
-                           outputs=[dist_concat, output_p, *outputs_n])
+        layer03_model = Model(inputs=model.input, outputs=layer03.output)
+        layer03_a = layer03_model(input_a)
+        layer03_p = layer03_model(input_p)
+        layer03_n = layer03_model(input_n)
+
+        layer02_model = Model(inputs=model.input, outputs=layer02)
+        layer02_a = layer02_model(input_a)
+        layer02_p = layer02_model(input_p)
+        layer02_n = layer02_model(input_n)
+
+        embed_model = Model(inputs=model.input, outputs=layer01)
+        embed_a = embed_model(input_a)
+        embed_p = embed_model(input_p)
+        embed_n = embed_model(input_n)
+
+        output_a = model(input_a)
+        output_p = model(input_p)
+        output_n = model(input_n)
+
+        concat = layers.Concatenate()(
+            [layer04_a, layer04_p, layer04_n,
+             layer03_a, layer03_p, layer03_n,
+             layer02_a, layer02_p, layer02_n,
+             embed_a, embed_p, embed_n,
+             output_a, output_p, output_n])
+
+        self.model = Model(
+            inputs=[input_a, input_p, input_n], outputs=concat)
         return self
 
     def build(self, shape):
@@ -306,8 +375,6 @@ class SchemaV03(BaseSchema):
         model.add(layers.MaxPooling2D())
         model.add(layers.Dropout(0.25))
         model.add(layers.Flatten())
-        model.add(layers.Dense(512, activation='relu'))
-        model.add(layers.Dropout(0.5))
         return model
 
     pass

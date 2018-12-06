@@ -35,21 +35,6 @@ class Reporter(object):
     def write_f1_score(self, score):
         self.file.write('f1-score,{},'.format(score*100))
 
-    def write_stack(self, dataset, schema, build, way, shot, augment):
-        self.write_dataset(dataset)
-        self.write_schema(schema)
-        self.write_build(build)
-        self.write_way(way)
-        self.write_shot(shot)
-        self.write_augment(augment)
-        self.file.flush()
-
-    def write_knn_metrics(self, weights, n_neighbors, accu_score, f1_score):
-        self.write_knn(weights, n_neighbors)
-        self.write_accuracy(accu_score)
-        self.write_f1_score(f1_score)
-        self.file.flush()
-
     def flush(self):
         self.file.flush()
 
