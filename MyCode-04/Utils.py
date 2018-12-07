@@ -96,26 +96,21 @@ def plot_roc_curve(title, y_test, y_score, n_cls, save=True, figsize=(19.20, 10.
         fpr[i], tpr[i], _ = roc_curve(y_test[i], y_score[i])
         roc_auc[i] = auc(fpr[i], tpr[i])
 
-    # Compute micro-average ROC curve and ROC area
     fpr["micro"], tpr["micro"], _ = roc_curve(y_test.ravel(), y_score .ravel())
     roc_auc["micro"] = auc(fpr["micro"], tpr["micro"])
 
-    # First aggregate all false positive rates
     all_fpr = np.unique(np.concatenate([fpr[i] for i in range(n_cls)]))
 
-    # Then interpolate all ROC curves at this points
     mean_tpr = np.zeros_like(all_fpr)
     for i in range(n_cls):
         mean_tpr += interp(all_fpr, fpr[i], tpr[i])
 
-    # Finally average it and compute AUC
     mean_tpr /= n_cls
 
     fpr["macro"] = all_fpr
     tpr["macro"] = mean_tpr
     roc_auc["macro"] = auc(fpr["macro"], tpr["macro"])
 
-    # Plot all ROC curves
     plt.clf()
     plt.gcf().set_size_inches(*figsize)
     plt.title(title)
@@ -178,15 +173,12 @@ def plot_confusion_matrix(cm, title, classes, save=True, normalize=True,
     return plt.gcf()
 
 
-def load_loss(loss: str, n_cls):
+def load_loss(loss: str, **kwargs):
     if loss.startswith('K-'):
         loss = getattr(losses, loss[2:])
     elif loss.startswith('L-'):
         module = __import__('Losses')
-        loss = getattr(module, loss[2:])()
-    elif loss.startswith('LN-'):
-        module = __import__('Losses')
-        loss = getattr(module, loss[3:])(n_cls)
+        loss = getattr(module, loss[2:])(**kwargs)
     return loss
 
 
