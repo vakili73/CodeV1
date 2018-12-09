@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+from sklearn.utils import shuffle
 from matplotlib import pyplot as plt
 
 
@@ -56,6 +57,8 @@ def get_fewshot(X_train, X_test,
     _X_test = np.array(_X_test)
     _y_train = np.array(_y_train)
     _y_test = np.array(_y_test)
+    _X_train, _y_train = shuffle(_X_train, _y_train)
+    _X_test, _y_test = shuffle(_X_test, _y_test)
     return _X_train, _X_test, _y_train, _y_test
 
 

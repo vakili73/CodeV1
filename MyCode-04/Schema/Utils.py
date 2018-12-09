@@ -45,7 +45,8 @@ def save_feature(X, y, title,
 
 
 def load_features(f_name, base_path='./logs/features'):
-    data = pd.read_csv(base_path+'/'+f_name, header=None).values
+    data = pd.read_csv(base_path+'/'+f_name,
+                       header=None).values
     y = data[:, 0]
     X = data[:, 1:]
     return X, y.astype('int')
