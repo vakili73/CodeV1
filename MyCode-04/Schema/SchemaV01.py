@@ -273,7 +273,7 @@ class SchemaV01(BaseSchema):
         input_p = layers.Input(shape=shape)
         input_n = layers.Input(shape=shape)
 
-        layer02_model = Model(inputs=model.input, outputs=layer02.output)
+        layer02_model = Model(inputs=model.input, outputs=layer02)
         layer02_a = layer02_model(input_a)
         layer02_p = layer02_model(input_p)
         layer02_n = layer02_model(input_n)

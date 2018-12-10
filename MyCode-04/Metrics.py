@@ -15,7 +15,7 @@ def top_k_accuracy(y_score, y_true, k=5):
     return np.mean(top_k_bool)
 
 
-def my_accu(y_true, y_pred, n_cls, ll_len, e_len=128):
+def my_accu(n_cls, ll_len, e_len=128):
     def _my_accu(y_true, y_pred):
         out_len = ll_len*(e_len*3)
         output_a = y_pred[:, out_len:(out_len+n_cls)]

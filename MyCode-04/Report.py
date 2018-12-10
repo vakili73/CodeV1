@@ -31,9 +31,8 @@ class Reporter(object):
         self.file.write('augment,{},'.format(augment))
         return self
 
-    def write_knn(self, metric, weights, n_neighbors):
-        self.file.write('knn,{},{},{}-neighbors,'.format(
-            metric, weights, n_neighbors))
+    def write_knn(self, weights, n_neighbors):
+        self.file.write('{},{}-neighbors,'.format(weights, n_neighbors))
         return self
 
     def write_accuracy(self, score):
