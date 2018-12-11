@@ -1,11 +1,12 @@
 
 
-class Reporter(object):
+class Report(object):
     def __init__(self, file_dir='./report.log'):
         self.file = open(file_dir, 'at')
 
     def end_line(self, end='\n'):
         self.file.write(end)
+        self.flush()
 
     def write_dataset(self, dataset):
         self.file.write('dataset,{},'.format(dataset))
@@ -39,8 +40,8 @@ class Reporter(object):
         self.file.write('accuracy,{},'.format(score*100))
         return self
 
-    def write_f1_score(self, score):
-        self.file.write('f1-score,{},'.format(score*100))
+    def write_fscore(self, score):
+        self.file.write('fscore,{},'.format(score*100))
         return self
 
     def flush(self):

@@ -15,6 +15,7 @@ from sklearn.manifold import LocallyLinearEmbedding
 from sklearn.decomposition import TruncatedSVD, PCA
 
 from tensorflow.keras import losses
+from tensorflow.keras import metrics
 from tensorflow.keras.utils import to_categorical
 
 
@@ -182,7 +183,20 @@ def load_loss(loss: str, **kwargs):
     return loss
 
 
-def load_datagen(datagen):
+def load_datagen(datagen: str):
+    if datagen == 'Original':
+        return 'Original'
     module = __import__('Generator')
     datagen = getattr(module, datagen)
     return datagen
+
+
+def load_metrics(metric: list, **kwargs):
+    _metrics = []
+    for m in metric:
+        if m.startswith('K-'):
+            _metrics.append(m[2:])
+        elif m.startswith('L-'):
+            module = __import__('Metrics')
+            _metrics.append(getattr(module, m[2:])(**kwargs))
+    return _metrics

@@ -4,7 +4,6 @@ CVNAME = ['A', 'B', 'C', 'D', 'E']
 DBPATH = './Database'
 
 INFORM = {
-    # shape: (rows, cols, channel)
     "cifar10": {
         "n_cls": 10,
         "shape": (32, 32, 3),

@@ -1,59 +1,52 @@
-from Utils import load_loss
-from Utils import load_datagen
+
+from Runner import Run
+from Reporter import Report
+
+from Config import METHODS
+from Config import DATASETS
 
 from Database import INFORM
-
 from Database import load_data
-from Database import get_fewshot
 from Database.Utils import reshape
+from Database.Utils import get_fewshot
 from Database.Utils import plot_histogram
-
-from Schema import load_schema
-
-from Metrics import my_accu
 
 from sklearn.model_selection import train_test_split
 
-from tensorflow.keras.utils import to_categorical
-from tensorflow.keras.callbacks import EarlyStopping
+import tensorflow as tf
+from tensorflow.keras import backend as K
 
 
-schm = 'V03'
-db = 'cifar10'
-data = load_data(db)
+# %% Main Program
+if __name__ == "__main__":
 
-# plot_histogram(data[-2], 'train_'+db)
+    config = tf.ConfigProto()
+    config.gpu_options.allow_growth = True
+    sess = tf.Session(config=config)
+    K.set_session(sess)
 
-X_train, X_test, y_train, y_test = get_fewshot(*data, shot=None)
+    rpt = Report()
 
-X_train = reshape(X_train / 255.0, INFORM[db]['shape'])
-X_test = reshape(X_test / 255.0, INFORM[db]['shape'])
+    for db, db_opt in DATASETS.items():
+        data = load_data(db)
+        n_cls = INFORM[db]['n_cls']
+        shape = INFORM[db]['shape']
+        plot_histogram(data[2], db+'_train')
 
-schema = load_schema(schm).buildMyModelV2(
-    INFORM[db]['shape'], INFORM[db]['n_cls'])
+        for shot in db_opt['shots']:
+            X_train, X_test, y_train, y_test = \
+                get_fewshot(*data, shot=shot)
+            X_train = reshape(X_train/255.0, shape)
+            X_test = reshape(X_test/255.0, shape)
+            data_tv = train_test_split(
+                X_train, y_train, test_size=0.25, stratify=y_train)
 
-# schema.model.summary()
-
-loss = load_loss('L-my_loss', n_cls=INFORM[db]['n_cls'], e_len=schema.e_len)
-dgen = load_datagen('MyTriplet')
-
-# schema.model.compile(optimizer='adadelta',
-#                      loss='categorical_crossentropy', metrics=['acc'])
-
-schema.model.compile(optimizer='adadelta', loss=loss,
-                     metrics=[my_accu(INFORM[db]['n_cls'], schema.e_len)])
-
-X_train, X_valid, y_train, y_valid = train_test_split(
-    X_train, y_train, test_size=0.25)
-
-# history = schema.model.fit(
-#     X_train, to_categorical(y_train, INFORM[db]['n_cls']), epochs=1000,
-#     batch_size=32, callbacks=[EarlyStopping(patience=20)], verbose=1,
-#     validation_data=(X_valid, to_categorical(y_valid, INFORM[db]['n_cls'])))
-
-traingen = dgen(X_train, y_train, INFORM[db]['n_cls'], 32)
-validgen = dgen(X_valid, y_valid, INFORM[db]['n_cls'], 32)
-
-history = schema.model.fit_generator(traingen, epochs=1000, validation_data=validgen,
-                                     callbacks=[EarlyStopping(patience=20)],
-                                     verbose=1, workers=8, use_multiprocessing=True)
+            for bld, bld_opt in METHODS.items():
+                # With Augmentation
+                rpt.write_dataset(db).write_shot(shot).flush()
+                Run(rpt, bld, n_cls, shape, db_opt, bld_opt,
+                    *data_tv, X_test, y_test, True)
+                # Without Augmentation
+                rpt.write_dataset(db).write_shot(shot).flush()
+                Run(rpt, bld, n_cls, shape, db_opt, bld_opt,
+                    *data_tv, X_test, y_test, False)

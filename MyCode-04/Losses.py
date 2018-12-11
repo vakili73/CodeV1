@@ -51,7 +51,9 @@ def triplet(alpha=0.2):
     return _loss
 
 
-def my_loss(n_cls, e_len):
+def my_loss(**kwargs):
+    n_cls = kwargs['n_cls']
+    e_len = kwargs['e_len']
 
     def _loss(y_true, y_pred):
         embeds_apn = []

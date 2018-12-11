@@ -40,7 +40,8 @@ def get_fewshot(X_train, X_test,
                 y_train, y_test,
                 shot=None, way=-1) -> tuple:
     if shot == None:
-        return X_train, X_test, y_train, y_test
+        return X_train.copy(), X_test.copy(),\
+            y_train.copy(), y_test.copy()
     way = len(np.unique(y_train)) if way == -1 else way
     _X_train = []
     _X_test = []

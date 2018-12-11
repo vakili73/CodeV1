@@ -13,13 +13,13 @@ class AugTriplet(Sequence):
     https://doi.org/10.1007/978-3-319-24261-3_7
     """
 
-    def __init__(self, x_set, y_set, n_cls, datagen_options, batch_size=128):
+    def __init__(self, x_set, y_set, n_cls, dgen_opt, batch_size=128):
         self.x, self.y = x_set, y_set
         self.batch_size = batch_size
         self.indices = [np.where(self.y == i)[0] for i in range(n_cls)]
         self.min_len = [self.indices[i].size for i in range(n_cls)]
         self.n_cls = n_cls
-        self.datagen = ImageDataGenerator(**datagen_options)
+        self.datagen = ImageDataGenerator(**dgen_opt)
         self.datagen.fit(self.x)
         self.generators = []
         for i in range(n_cls):
