@@ -22,7 +22,6 @@ class SchemaV04(BaseSchema):
         model.add(layers.Dropout(0.5))
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = layer.output
         self.model = model
@@ -37,7 +36,6 @@ class SchemaV04(BaseSchema):
         model.add(layers.Dropout(0.5))
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self.extract_layer = 'dense_128_relu'
         self.input = model.input
         self.output = layer.output
         self.model = model
@@ -53,11 +51,10 @@ class SchemaV04(BaseSchema):
             https://doi.org/10.1017/CBO9781107415324.004
         """
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dense(512, activation='sigmoid'))
         model.add(layers.Dropout(0.5))
         model.add(layers.Dense(128, activation='sigmoid'))
 
-        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = model.output
 
@@ -95,11 +92,10 @@ class SchemaV04(BaseSchema):
             Innull 2006 Jun 17 (pp. 1735-1742). IEEE.
         """
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dense(512, activation='sigmoid'))
         model.add(layers.Dropout(0.5))
         model.add(layers.Dense(128, activation='sigmoid'))
 
-        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = model.output
 
@@ -135,11 +131,10 @@ class SchemaV04(BaseSchema):
         https://doi.org/10.1007/978-3-319-24261-3_7
         """
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dense(512, activation='sigmoid'))
         model.add(layers.Dropout(0.5))
         model.add(layers.Dense(128, activation='sigmoid'))
 
-        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = model.output
 
@@ -189,11 +184,10 @@ class SchemaV04(BaseSchema):
         https://doi.org/10.1109/CVPR.2015.7298682
         """
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dense(512, activation='sigmoid'))
         model.add(layers.Dropout(0.5))
         model.add(layers.Dense(128, activation='sigmoid'))
 
-        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = model.output
 
@@ -244,7 +238,7 @@ class SchemaV04(BaseSchema):
         layer01 = model.output
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self.ll_len = 2
+        self.e_len = [512, 128]
         self.input = model.input
         self.output = [layer01, model.output]
 
@@ -299,9 +293,8 @@ class SchemaV04(BaseSchema):
         model.add(layers.Conv2D(32, (3, 3), activation='relu'))
         model.add(layers.MaxPooling2D())
         model.add(layers.Dropout(0.25))
-        layer03 = layers.Dense(128, activation='sigmoid')(
-            layers.Flatten()(model.output))
         model.add(layers.Flatten())
+        layer03 = layers.Dense(128, activation='sigmoid')(model.output)
         model.add(layers.Dense(512, activation='sigmoid'))
         model.add(layers.Dropout(0.5))
         layer02 = model.output
@@ -310,7 +303,7 @@ class SchemaV04(BaseSchema):
         layer01 = model.output
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self.ll_len = 5
+        self.e_len = [128, 128, 128, 512, 128]
         self.input = model.input
         self.output = [layer01, model.output]
 
@@ -318,17 +311,17 @@ class SchemaV04(BaseSchema):
         input_p = layers.Input(shape=shape)
         input_n = layers.Input(shape=shape)
 
-        layer05_model = Model(inputs=model.input, outputs=layer05.output)
+        layer05_model = Model(inputs=model.input, outputs=layer05)
         layer05_a = layer05_model(input_a)
         layer05_p = layer05_model(input_p)
         layer05_n = layer05_model(input_n)
 
-        layer04_model = Model(inputs=model.input, outputs=layer04.output)
+        layer04_model = Model(inputs=model.input, outputs=layer04)
         layer04_a = layer04_model(input_a)
         layer04_p = layer04_model(input_p)
         layer04_n = layer04_model(input_n)
 
-        layer03_model = Model(inputs=model.input, outputs=layer03.output)
+        layer03_model = Model(inputs=model.input, outputs=layer03)
         layer03_a = layer03_model(input_a)
         layer03_p = layer03_model(input_p)
         layer03_n = layer03_model(input_n)

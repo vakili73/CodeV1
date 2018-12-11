@@ -24,7 +24,6 @@ class SchemaV02(BaseSchema):
         model.add(layers.Dropout(0.25))
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = layer.output
         self.model = model
@@ -41,7 +40,6 @@ class SchemaV02(BaseSchema):
         model.add(layers.Dropout(0.25))
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self.extract_layer = 'dense_128_relu'
         self.input = model.input
         self.output = layer.output
         self.model = model
@@ -63,7 +61,6 @@ class SchemaV02(BaseSchema):
         model.add(layers.Dropout(0.25))
         model.add(layers.Dense(128, activation='sigmoid'))
 
-        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = model.output
 
@@ -107,7 +104,6 @@ class SchemaV02(BaseSchema):
         model.add(layers.Dropout(0.25))
         model.add(layers.Dense(128, activation='sigmoid'))
 
-        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = model.output
 
@@ -149,7 +145,6 @@ class SchemaV02(BaseSchema):
         model.add(layers.Dropout(0.25))
         model.add(layers.Dense(128, activation='sigmoid'))
 
-        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = model.output
 
@@ -205,7 +200,6 @@ class SchemaV02(BaseSchema):
         model.add(layers.Dropout(0.25))
         model.add(layers.Dense(128, activation='sigmoid'))
 
-        self.extract_layer = 'dense_128_sigmoid'
         self.input = model.input
         self.output = model.output
 
@@ -259,7 +253,7 @@ class SchemaV02(BaseSchema):
         layer01 = model.output
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self.ll_len = 3
+        self.e_len = [512, 256, 128]
         self.input = model.input
         self.output = [layer01, model.output]
 
@@ -332,7 +326,7 @@ class SchemaV02(BaseSchema):
         layer01 = model.output
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self.ll_len = 5
+        self.e_len = [128, 128, 512, 256, 128]
         self.input = model.input
         self.output = [layer01, model.output]
 
@@ -340,12 +334,12 @@ class SchemaV02(BaseSchema):
         input_p = layers.Input(shape=shape)
         input_n = layers.Input(shape=shape)
 
-        layer05_model = Model(inputs=model.input, outputs=layer05.output)
+        layer05_model = Model(inputs=model.input, outputs=layer05)
         layer05_a = layer05_model(input_a)
         layer05_p = layer05_model(input_p)
         layer05_n = layer05_model(input_n)
 
-        layer04_model = Model(inputs=model.input, outputs=layer04.output)
+        layer04_model = Model(inputs=model.input, outputs=layer04)
         layer04_a = layer04_model(input_a)
         layer04_p = layer04_model(input_p)
         layer04_n = layer04_model(input_n)

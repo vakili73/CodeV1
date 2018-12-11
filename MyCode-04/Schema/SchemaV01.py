@@ -222,7 +222,7 @@ class SchemaV01(BaseSchema):
         layer01 = model.output
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self.ll_len = 1
+        self.e_len = [128]
         self.input = model.input
         self.output = [layer01, model.output]
 
@@ -265,7 +265,7 @@ class SchemaV01(BaseSchema):
         layer01 = model.output
         model.add(layers.Dense(n_cls, activation='softmax'))
 
-        self.ll_len = 2
+        self.e_len = [128, 128]
         self.input = model.input
         self.output = [layer01, model.output]
 

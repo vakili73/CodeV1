@@ -15,9 +15,11 @@ def top_k_accuracy(y_score, y_true, k=5):
     return np.mean(top_k_bool)
 
 
-def my_accu(n_cls, ll_len, e_len=128):
-    def _my_accu(y_true, y_pred):
-        out_len = ll_len*(e_len*3)
+def my_accu(n_cls, e_len):
+    def my_accu(y_true, y_pred):
+        out_len = 0
+        for i in range(len(e_len)):
+            out_len += (e_len[i]*3)
         output_a = y_pred[:, out_len:(out_len+n_cls)]
         output_p = y_pred[:, (out_len+n_cls):(out_len+(n_cls*2))]
         output_n = y_pred[:, (out_len+(n_cls*2)):(out_len+(n_cls*3))]
@@ -31,7 +33,7 @@ def my_accu(n_cls, ll_len, e_len=128):
         accu_n = K.cast(
             K.equal(K.argmax(true_n), K.argmax(output_n)), K.floatx())
         return K.mean((accu_a+accu_p+accu_n)/3.0)
-    return _my_accu
+    return my_accu
 
 
 def kullback_leibler(tensor_a, tensor_b):

@@ -51,19 +51,20 @@ def triplet(alpha=0.2):
     return _loss
 
 
-def my_loss(n_cls, ll_len, e_len=128):
+def my_loss(n_cls, e_len):
 
     def _loss(y_true, y_pred):
-
         embeds_apn = []
-        for i in range(ll_len):
-            _len = i*(e_len*3)
-            embed_a = y_pred[:, _len:(_len+e_len)]
-            embed_p = y_pred[:, (_len+e_len):(_len+(e_len*2))]
-            embed_n = y_pred[:, (_len+(e_len*2)):(_len+(e_len*3))]
+        for i in range(len(e_len)):
+            _len = i*(e_len[i]*3)
+            embed_a = y_pred[:, _len:(_len+e_len[i])]
+            embed_p = y_pred[:, (_len+e_len[i]):(_len+(e_len[i]*2))]
+            embed_n = y_pred[:, (_len+(e_len[i]*2)):(_len+(e_len[i]*3))]
             embeds_apn.append((embed_a, embed_p, embed_n))
 
-        out_len = ll_len*(e_len*3)
+        out_len = 0
+        for i in range(len(e_len)):
+            out_len += (e_len[i]*3)
 
         output_a = y_pred[:, out_len:(out_len+n_cls)]
         output_p = y_pred[:, (out_len+n_cls):(out_len+(n_cls*2))]
@@ -102,7 +103,7 @@ def my_loss(n_cls, ll_len, e_len=128):
             return _loss
 
         loss = 0
-        for i in range(ll_len):
+        for i in range(len(e_len)):
             loss += __loss(*embeds_apn[i])
         loss += \
             Metrics.cross_entropy(true_a, output_a) +\
