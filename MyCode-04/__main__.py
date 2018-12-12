@@ -45,8 +45,10 @@ if __name__ == "__main__":
                 # With Augmentation
                 rpt.write_dataset(db).write_shot(shot).flush()
                 Run(rpt, bld, n_cls, shape, db_opt, bld_opt,
-                    *data_tv, X_test, y_test, True)
+                    *data_tv, X_test, y_test, db, shot, True)
                 # Without Augmentation
                 rpt.write_dataset(db).write_shot(shot).flush()
                 Run(rpt, bld, n_cls, shape, db_opt, bld_opt,
-                    *data_tv, X_test, y_test, False)
+                    *data_tv, X_test, y_test, db, shot, False)
+    rpt.flush()
+    rpt.close()

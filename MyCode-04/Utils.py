@@ -60,8 +60,16 @@ def plot_lsa_reduction(embeddings, targets, title, save=True, figsize=(19.20, 10
 
 
 def plot_reduction(**kwargs):
-    plot_lsa_reduction(**kwargs)
-    plot_pca_reduction(**kwargs)
+    embeddings = kwargs['embeddings']
+    if isinstance(embeddings, list):
+        targets = kwargs['targets']
+        title = kwargs['title']
+        for i in range(len(embeddings)):
+            plot_lsa_reduction(embeddings[i], targets, title+'_'+str(i))
+            plot_pca_reduction(embeddings[i], targets, title+'_'+str(i))
+    else:
+        plot_lsa_reduction(**kwargs)
+        plot_pca_reduction(**kwargs)
 
 
 def plot_lr_curve(history, title, save=True, figsize=(19.20, 10.80),
@@ -71,11 +79,11 @@ def plot_lr_curve(history, title, save=True, figsize=(19.20, 10.80),
     plt.title(title)
     plt.xlabel('Epoch')
     plt.ylabel('Loss Value')
-    plt.plot(history.epoch,
-             history.history['loss'],
+    plt.plot(history['epoch'],
+             history['loss'],
              label='Train Loss')
-    plt.plot(history.epoch,
-             history.history['val_loss'],
+    plt.plot(history['epoch'],
+             history['val_loss'],
              label='Valid loss')
     plt.legend()
     if save:
@@ -83,8 +91,6 @@ def plot_lr_curve(history, title, save=True, figsize=(19.20, 10.80),
             os.makedirs(base_path)
         path = base_path+'/'+title+'.png'
         plt.gcf().savefig(path)
-        path = base_path+'/'+title+'.cp'
-        _pickle.dump(history.history, open(path, 'wb'))
     return plt.gcf()
 
 
@@ -200,3 +206,12 @@ def load_metrics(metric: list, **kwargs):
             module = __import__('Metrics')
             _metrics.append(getattr(module, m[2:])(**kwargs))
     return _metrics
+
+
+def save_history(history, title,
+                 base_path='./logs/histories'):
+    if not os.path.exists(base_path):
+        os.makedirs(base_path)
+    path = base_path+'/'+title+'.cpkl'
+    with open(path, 'wb') as fileObj:
+        _pickle.dump(history, fileObj)

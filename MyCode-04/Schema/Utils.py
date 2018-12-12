@@ -38,10 +38,17 @@ def save_feature(X, y, title,
     np.set_printoptions(precision=16)
     if not os.path.exists(base_path):
         os.makedirs(base_path)
-    path = base_path+'/'+title+'.txt'
-    with open(path, 'w') as f:
-        concat = np.c_[y, X]
-        np.savetxt(f, concat, delimiter=',')
+    if isinstance(X, list):
+        for i in range(len(X)):
+            path = base_path+'/'+title+'_'+str(i)+'.txt'
+            with open(path, 'w') as f:
+                concat = np.c_[y, X[i]]
+                np.savetxt(f, concat, delimiter=',')
+    else:
+        path = base_path+'/'+title+'.txt'
+        with open(path, 'w') as f:
+            concat = np.c_[y, X]
+            np.savetxt(f, concat, delimiter=',')
 
 
 def load_features(f_name, base_path='./logs/features'):

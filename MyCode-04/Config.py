@@ -1,8 +1,8 @@
 
+TOP_K_ACCU = [1, 3, 5]
+
 __VERBOSE = 1
 __EPOCHS = 500
-__VALIDSTEPS = 200
-__STEPSPEREPOCH = 1000
 
 PATIENCE = 20
 BATCHSIZE = 32
@@ -11,15 +11,14 @@ FITGENOPTS = {
     'workers': 8,
     'epochs': __EPOCHS,
     'verbose': __VERBOSE,
+    'steps_per_epoch': 1000,
+    'validation_steps': 200,
     'use_multiprocessing': True,
-    'validation_steps': __VALIDSTEPS,
-    'steps_per_epoch': __STEPSPEREPOCH,
 }
 FITOPTS = {
     'epochs': __EPOCHS,
     'verbose': __VERBOSE,
-    'validation_steps': __VALIDSTEPS,
-    'steps_per_epoch': __STEPSPEREPOCH,
+    'batch_size': BATCHSIZE,
 }
 
 __SHOTS = [5, 10, 20, 50, None]
