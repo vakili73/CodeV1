@@ -29,6 +29,8 @@ from sklearn.metrics import confusion_matrix
 from sklearn.metrics import classification_report
 from sklearn.metrics import precision_recall_fscore_support
 
+from scipy.spatial.distance import cosine
+
 from tensorflow.keras.utils import to_categorical
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 from tensorflow.keras.callbacks import EarlyStopping, TerminateOnNaN
@@ -142,16 +144,10 @@ def getKnnOpts(bld: str, knn_opt: dict):
     if bld.startswith('MyModel'):
         _knn_opt.append(knn_opt['embed_layer'])
         _knn_opt.append([])
-
-        def cosine_distance(a, b):
-            a = np.linalg.norm(a)
-            b = np.linalg.norm(b)
-            return 1.0-np.sum(a * b)
-
         for knn in knn_opt['output_layer'][0]:
             _knn = dict(knn)
             _knn.update({'metric': 'pyfunc', 'metric_params': {
-                        'func': cosine_distance}})
+                        'func': cosine}})
             _knn_opt[1].append(_knn)
     return _knn_opt
 
