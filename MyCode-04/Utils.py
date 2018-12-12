@@ -190,7 +190,7 @@ def load_loss(loss: str, **kwargs):
 
 
 def load_datagen(datagen: str):
-    if datagen == 'Original':
+    if datagen == 'Original' or datagen == 'AugOriginal':
         return 'Original'
     module = __import__('Generator')
     datagen = getattr(module, datagen)

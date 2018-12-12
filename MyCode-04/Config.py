@@ -11,8 +11,8 @@ FITGENOPTS = {
     'workers': 8,
     'epochs': __EPOCHS,
     'verbose': __VERBOSE,
-    'steps_per_epoch': 1000,
-    'validation_steps': 200,
+    'steps_per_epoch': 300,
+    'validation_steps': 50,
     'use_multiprocessing': True,
 }
 FITOPTS = {

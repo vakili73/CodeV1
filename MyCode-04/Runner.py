@@ -58,7 +58,8 @@ def Run(rpt: Report, bld: str, n_cls: int, shape: tuple, db_opt: dict, bld_opt: 
     knn_opt = bld_opt['knn']
     svm_opt = bld_opt['svm']
 
-    print(db+'_'+bld+'_'+str(shot))
+    title = db+'_'+bld+'_'+schm+'_'+str(aug_flag)+'_'+str(shot)
+    print(title)
     rpt.write_build(bld).write_schema(schm).flush()
     rpt.write_augment(aug_flag).flush()
 
@@ -66,25 +67,24 @@ def Run(rpt: Report, bld: str, n_cls: int, shape: tuple, db_opt: dict, bld_opt: 
 
     history = fitModel(schema, n_cls, dgen_opt, datagen,
                        X_train, X_valid, y_train, y_valid, aug_flag)
-    save_history(history, db+'_'+bld+'_'+schm)
-    save_weights(schema.model, db+'_'+bld+'_'+schm)
-    plot_lr_curve(history, db+'_'+bld+'_'+schm)
+    save_history(history, title)
+    save_weights(schema.model, title)
+    plot_lr_curve(history, title)
 
     embed_feature = getFeatures(schema.getModel(), X_test)
-    save_feature(embed_feature, y_test, db+'_'+bld+'_'+schm)
+    save_feature(embed_feature, y_test, title)
     plot_reduction(embeddings=embed_feature, targets=y_test,
-                   title=db+'_'+bld+'_'+schm)
+                   title=title)
 
     if is_clf:
         rpt.write_text('nn_metrics').flush()
         if isinstance(embed_feature, list):
             y_score = embed_feature[-1]
-            clf_report(rpt, y_test, y_score, n_cls, db+'_'+bld+'_'+schm)
+            clf_report(rpt, y_test, y_score, n_cls, title)
         else:
             y_score = schema.model.predict(X_test)
-            clf_report(rpt, y_test, y_score, n_cls, db+'_'+bld+'_'+schm)
+            clf_report(rpt, y_test, y_score, n_cls, title)
 
-    title = db+'_'+bld+'_'+schm
     embed_feature_train = getFeatures(schema.getModel(), X_train)
     if isinstance(embed_feature, list):
         knn_opt = getKnnOpts(bld, knn_opt)
@@ -149,8 +149,10 @@ def getKnnOpts(bld: str, knn_opt: dict):
             return 1.0-np.sum(a * b)
 
         for knn in knn_opt['output_layer'][0]:
-            _knn_opt[0].append(knn.update(
-                {'metric': 'pyfunc', 'func': cosine_distance}))
+            _knn = dict(knn)
+            _knn.update({'metric': 'pyfunc', 'metric_params': {
+                        'func': cosine_distance}})
+            _knn_opt[1].append(_knn)
     return _knn_opt
 
 
