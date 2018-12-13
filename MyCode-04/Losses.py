@@ -6,7 +6,7 @@ from tensorflow.keras import backend as K
 
 # %% Losses function
 
-def cross_entropy():
+def cross_entropy(**kwargs):
     """
     van der Spoel, E., Rozing, M. P., Houwing-Duistermaat, J. J., Eline Slagboom, P., Beekman, M., de Craen, A. J. M., … van Heemst, D.
     (2015). Siamese Neural Networks for One-Shot Image Recognition.
@@ -20,7 +20,7 @@ def cross_entropy():
     return _loss
 
 
-def contrastive(margin=1.25):
+def contrastive(margin=1.25, **kwargs):
     """
     Hadsell, R., Chopra, S., & LeCun, Y. 
     (2006). Dimensionality reduction by learning an invariant mapping. 
@@ -35,7 +35,7 @@ def contrastive(margin=1.25):
     return _loss
 
 
-def triplet(alpha=0.2):
+def triplet(alpha=0.2, **kwargs):
     """
     Schroff, F., Kalenichenko, D., & Philbin, J. 
     (2015). FaceNet: A unified embedding for face recognition and clustering. 
