@@ -13,7 +13,6 @@ FITGENOPTS = {
     'verbose': __VERBOSE,
     'steps_per_epoch': 300,
     'validation_steps': 50,
-    'use_multiprocessing': True,
 }
 FITOPTS = {
     'epochs': __EPOCHS,
