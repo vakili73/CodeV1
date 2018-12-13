@@ -28,27 +28,27 @@ if __name__ == "__main__":
     rpt = Report()
 
     for db, db_opt in DATASETS.items():
-        data = load_data(db)
         n_cls = INFORM[db]['n_cls']
         shape = INFORM[db]['shape']
-        plot_histogram(data[2], db+'_train')
+        X_train, X_test, y_train, y_test = load_data(db)
+        X_train = reshape(X_train/255.0, shape)
+        X_test = reshape(X_test/255.0, shape)
+        X_train, X_valid, y_train, y_valid = train_test_split(
+            X_train, y_train, test_size=0.25, stratify=y_train)
+        plot_histogram(y_train, db+'_train')
 
         for shot in db_opt['shots']:
-            X_train, X_test, y_train, y_test = \
-                get_fewshot(*data, shot=shot)
-            X_train = reshape(X_train/255.0, shape)
-            X_test = reshape(X_test/255.0, shape)
-            data_tv = train_test_split(
-                X_train, y_train, test_size=0.25, stratify=y_train)
+            _X_train, _y_train = get_fewshot(X_train, y_train, shot=shot)
+            data = (_X_train, X_valid, _y_train, y_valid)
 
             for bld, bld_opt in METHODS.items():
                 # With Augmentation
                 rpt.write_dataset(db).write_shot(shot).flush()
                 Run(rpt, bld, n_cls, shape, db_opt, bld_opt,
-                    *data_tv, X_test, y_test, db, shot, True)
+                    *data, X_test, y_test, db, shot, True)
                 # Without Augmentation
                 rpt.write_dataset(db).write_shot(shot).flush()
                 Run(rpt, bld, n_cls, shape, db_opt, bld_opt,
-                    *data_tv, X_test, y_test, db, shot, False)
+                    *data, X_test, y_test, db, shot, False)
     rpt.flush()
     rpt.close()

@@ -36,31 +36,20 @@ def load_data(db_name) -> tuple:
     return X_train, X_test, y_train, y_test
 
 
-def get_fewshot(X_train, X_test,
-                y_train, y_test,
-                shot=None, way=-1) -> tuple:
+def get_fewshot(X, y, shot=None, way=-1) -> tuple:
     if shot == None:
-        return X_train.copy(), X_test.copy(),\
-            y_train.copy(), y_test.copy()
-    way = len(np.unique(y_train)) if way == -1 else way
-    _X_train = []
-    _X_test = []
-    _y_train = []
-    _y_test = []
+        return X, y
+    way = len(np.unique(y)) if way == -1 else way
+    _X = []
+    _y = []
     for i in range(way):
-        ind = np.where(y_train == i)[0]
-        _X_train.extend(X_train[ind[0:shot]])
-        _y_train.extend(y_train[ind[0:shot]])
-        ind = np.where(y_test == i)[0]
-        _X_test.extend(X_test[ind])
-        _y_test.extend(y_test[ind])
-    _X_train = np.array(_X_train)
-    _X_test = np.array(_X_test)
-    _y_train = np.array(_y_train)
-    _y_test = np.array(_y_test)
-    _X_train, _y_train = shuffle(_X_train, _y_train)
-    _X_test, _y_test = shuffle(_X_test, _y_test)
-    return _X_train, _X_test, _y_train, _y_test
+        ind = np.where(y == i)[0]
+        _X.extend(X[ind[0:shot]])
+        _y.extend(y[ind[0:shot]])
+    _X = np.array(_X)
+    _y = np.array(_y)
+    _X, _y = shuffle(_X, _y)
+    return _X, _y
 
 
 def reshape(X, shape) -> tuple:
