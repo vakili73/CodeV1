@@ -1094,8 +1094,8 @@ cdef class KullbackLeiblerDistance(DistanceMetric):
 
        cdef np.intp_t i
        for i in range(size):
-           tmp = max(FLT_EPSILON, x1[i])
-           d += tmp * log(tmp / max(FLT_EPSILON, x2[i]))
+           tmp = fmax(FLT_EPSILON, x1[i])
+           d += tmp * log(tmp / fmax(FLT_EPSILON, x2[i]))
 
        return d
 
