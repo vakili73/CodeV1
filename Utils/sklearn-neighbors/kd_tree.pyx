@@ -11,7 +11,7 @@ __all__ = ['KDTree']
 
 DOC_DICT = {'BinaryTree': 'KDTree', 'binary_tree': 'kd_tree'}
 
-VALID_METRICS = ['EuclideanDistance', 'ManhattanDistance',
+VALID_METRICS = ['EuclideanDistance', 'ManhattanDistance', 'KullbackLeiblerDistance',
                  'ChebyshevDistance', 'MinkowskiDistance']
 
 
