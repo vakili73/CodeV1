@@ -45,7 +45,8 @@ cdef inline np.ndarray _buffer_to_ndarray(DTYPE_t* x, np.npy_intp n):
 
 
 # some handy constants
-from libc.math cimport fabs, sqrt, exp, pow, cos, sin, asin
+from libc.float cimport FLT_EPSILON
+from libc.math cimport fabs, sqrt, exp, pow, cos, sin, asin, log
 cdef DTYPE_t INF = np.inf
 
 from typedefs cimport DTYPE_t, ITYPE_t, DITYPE_t, DTYPECODE
@@ -88,6 +89,7 @@ METRIC_MAPPING = {'euclidean': EuclideanDistance,
                   'haversine': HaversineDistance,
                   'cosine': CosineDistance,
                   'correlation': CorrelationDistance,
+                  'kullbackleibler': KullbackLeiblerDistance,
                   'pyfunc': PyFuncDistance}
 
 
@@ -1077,6 +1079,25 @@ cdef class CorrelationDistance(DistanceMetric):
            x1Tx2 += tmp1 * tmp2
 
        return (1. - x1Tx2) / sqrt(x1nrm * x2nrm)
+
+
+#------------------------------------------------------------
+# Kullback-Leibler Distance
+#  D(x, y) = dot(a, log(a / b))
+# [This is not a true metric, so we will leave it out.]
+#
+cdef class KullbackLeiblerDistance(DistanceMetric):
+   cdef inline DTYPE_t dist(self, DTYPE_t* x1, DTYPE_t* x2,
+                            ITYPE_t size) nogil except -1:
+       cdef DTYPE_t d = 0.
+       cdef DTYPE_t tmp
+
+       cdef np.intp_t i
+       for i in range(size):
+           tmp = max(FLT_EPSILON, x1[i])
+           d += tmp * log(tmp / max(FLT_EPSILON, x2[i]))
+
+       return d
 
 
 #------------------------------------------------------------
