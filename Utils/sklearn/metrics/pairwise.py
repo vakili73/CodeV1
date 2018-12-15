@@ -1111,7 +1111,7 @@ _VALID_METRICS = ['euclidean', 'l2', 'l1', 'manhattan', 'cityblock',
                   'braycurtis', 'canberra', 'chebyshev', 'correlation',
                   'cosine', 'dice', 'hamming', 'jaccard', 'kulsinski',
                   'mahalanobis', 'matching', 'minkowski', 'rogerstanimoto',
-                  'russellrao', 'seuclidean', 'sokalmichener', 'kullbackleibler'
+                  'russellrao', 'seuclidean', 'sokalmichener', 'kullbackleibler',
                   'sokalsneath', 'sqeuclidean', 'yule', "wminkowski"]
 
 
