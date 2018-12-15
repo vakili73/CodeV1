@@ -83,6 +83,7 @@ __all__ = [
     'cityblock',
     'correlation',
     'cosine',
+    'kullbackleibler',
     'dice',
     'directed_hausdorff',
     'euclidean',
@@ -132,7 +133,7 @@ def _args_to_kwargs_xdist(args, kwargs, metric, func_name):
 
     if (callable(metric) and metric not in [
             braycurtis, canberra, chebyshev, cityblock, correlation, cosine,
-            dice, euclidean, hamming, jaccard, kulsinski, mahalanobis,
+            dice, euclidean, hamming, jaccard, kulsinski, mahalanobis, kullbackleibler,
             matching, minkowski, rogerstanimoto, russellrao, seuclidean,
             sokalmichener, sokalsneath, sqeuclidean, yule, wminkowski]):
         raise TypeError('When using a custom metric arguments must be passed'
@@ -742,6 +743,14 @@ def cosine(u, v, w=None):
     # cosine distance is also referred to as 'uncentered correlation',
     #   or 'reflective correlation'
     return correlation(u, v, w=w, centered=False)
+
+
+def kullbackleibler(u, v):
+    eps = np.finfo(np.float32).eps
+    u = np.clip(u, eps, None)
+    v = np.clip(v, eps, None)
+    d = u * np.log(u / v) + v * np.log(v / u)
+    return np.sum(d)
 
 
 def hamming(u, v, w=None):
@@ -1573,6 +1582,7 @@ _METRICS = {
     'cityblock': MetricInfo(aka=['cityblock', 'cblock', 'cb', 'c']),
     'correlation': MetricInfo(aka=['correlation', 'co']),
     'cosine': MetricInfo(aka=['cosine', 'cos']),
+    'kullbackleibler': MetricInfo(aka=['kullbackleibler', 'kl']),
     'dice': MetricInfo(aka=['dice'], types=['bool']),
     'euclidean': MetricInfo(aka=['euclidean', 'euclid', 'eu', 'e']),
     'hamming': MetricInfo(aka=['matching', 'hamming', 'hamm', 'ha', 'h'],
