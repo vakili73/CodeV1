@@ -1089,13 +1089,15 @@ cdef class CorrelationDistance(DistanceMetric):
 cdef class KullbackLeiblerDistance(DistanceMetric):
    cdef inline DTYPE_t dist(self, DTYPE_t* x1, DTYPE_t* x2,
                             ITYPE_t size) nogil except -1:
-       cdef DTYPE_t d = 0.
-       cdef DTYPE_t tmp
+       cdef DTYPE_t d = 0
+       cdef DTYPE_t tmp1, tmp2
 
        cdef np.intp_t i
        for i in range(size):
-           tmp = fmax(FLT_EPSILON, x1[i])
-           d += tmp * log(tmp / fmax(FLT_EPSILON, x2[i]))
+           tmp1 = fmax(FLT_EPSILON, x1[i])
+           tmp2 = fmax(FLT_EPSILON, x2[i])
+           d += tmp1 * log(tmp1 / tmp2)
+           d += tmp2 * log(tmp2 / tmp1)
 
        return d
 
