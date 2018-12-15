@@ -86,6 +86,8 @@ METRIC_MAPPING = {'euclidean': EuclideanDistance,
                   'sokalmichener': SokalMichenerDistance,
                   'sokalsneath': SokalSneathDistance,
                   'haversine': HaversineDistance,
+                  'cosine': CosineDistance,
+                  'correlation': CorrelationDistance,
                   'pyfunc': PyFuncDistance}
 
 
@@ -1037,15 +1039,16 @@ cdef class HaversineDistance(DistanceMetric):
 #  D(x, y) = dot(x, y) / (|x| * |y|)
 # [This is not a true metric, so we will leave it out.]
 #
-#cdef class CosineDistance(DistanceMetric):
-#    cdef inline DTYPE_t dist(self, DTYPE_t* x1, DTYPE_t* x2, ITYPE_t size):
-#        cdef DTYPE_t d = 0, norm1 = 0, norm2 = 0
-#        cdef np.intp_t j
-#        for j in range(size):
-#            d += x1[j] * x2[j]
-#            norm1 += x1[j] * x1[j]
-#            norm2 += x2[j] * x2[j]
-#        return 1.0 - d / sqrt(norm1 * norm2)
+cdef class CosineDistance(DistanceMetric):
+   cdef inline DTYPE_t dist(self, DTYPE_t* x1, DTYPE_t* x2,
+                            ITYPE_t size) nogil except -1:
+       cdef DTYPE_t d = 0, norm1 = 0, norm2 = 0
+       cdef np.intp_t j
+       for j in range(size):
+           d += x1[j] * x2[j]
+           norm1 += x1[j] * x1[j]
+           norm2 += x2[j] * x2[j]
+       return 1.0 - d / sqrt(norm1 * norm2)
 
 
 #------------------------------------------------------------
@@ -1053,26 +1056,27 @@ cdef class HaversineDistance(DistanceMetric):
 #  D(x, y) = dot((x - mx), (y - my)) / (|x - mx| * |y - my|)
 # [This is not a true metric, so we will leave it out.]
 #
-#cdef class CorrelationDistance(DistanceMetric):
-#    cdef inline DTYPE_t dist(self, DTYPE_t* x1, DTYPE_t* x2, ITYPE_t size):
-#        cdef DTYPE_t mu1 = 0, mu2 = 0, x1nrm = 0, x2nrm = 0, x1Tx2 = 0
-#        cdef DTYPE_t tmp1, tmp2
-#
-#        cdef np.intp_t i
-#        for i in range(size):
-#            mu1 += x1[i]
-#            mu2 += x2[i]
-#        mu1 /= size
-#        mu2 /= size
-#
-#        for i in range(size):
-#            tmp1 = x1[i] - mu1
-#            tmp2 = x2[i] - mu2
-#            x1nrm += tmp1 * tmp1
-#            x2nrm += tmp2 * tmp2
-#            x1Tx2 += tmp1 * tmp2
-#
-#        return (1. - x1Tx2) / sqrt(x1nrm * x2nrm)
+cdef class CorrelationDistance(DistanceMetric):
+   cdef inline DTYPE_t dist(self, DTYPE_t* x1, DTYPE_t* x2,
+                            ITYPE_t size) nogil except -1:
+       cdef DTYPE_t mu1 = 0, mu2 = 0, x1nrm = 0, x2nrm = 0, x1Tx2 = 0
+       cdef DTYPE_t tmp1, tmp2
+
+       cdef np.intp_t i
+       for i in range(size):
+           mu1 += x1[i]
+           mu2 += x2[i]
+       mu1 /= size
+       mu2 /= size
+
+       for i in range(size):
+           tmp1 = x1[i] - mu1
+           tmp2 = x2[i] - mu2
+           x1nrm += tmp1 * tmp1
+           x2nrm += tmp2 * tmp2
+           x1Tx2 += tmp1 * tmp2
+
+       return (1. - x1Tx2) / sqrt(x1nrm * x2nrm)
 
 
 #------------------------------------------------------------
