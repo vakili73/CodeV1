@@ -139,6 +139,8 @@ def Run_KNN(rpt, knn_opt, X_train,
                 knn['weights'], knn['n_neighbors'])
         print(_title)
         rpt.write_knn(knn['weights'], knn['n_neighbors']).flush()
+        if 'metric' in knn.keys():
+            rpt.write_text('metric,'+knn['metric']).flush()
         clf = KNeighborsClassifier(**knn)
         clf.fit(X_train, y_train)
         y_score = clf.predict_proba(X_test)
