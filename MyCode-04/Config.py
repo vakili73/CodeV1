@@ -150,8 +150,7 @@ METHODS = {
         'metrics': ['L-my_accu'],
         'datagen': 'MyTriplet',
         'classification': '',
-        'knn': {'embed_layer': __KNNS,
-                'output_layer': (__KNNS, {'metric': 'cosine'}), },
+        'knn': (__KNNS, {'metric': ['cosine', 'correlation', 'kullbackleibler']}),
         'svm': __SVMS,
     },
     'MyModelV2': {
@@ -159,8 +158,7 @@ METHODS = {
         'metrics': ['L-my_accu'],
         'datagen': 'MyTriplet',
         'classification': '',
-        'knn': {'embed_layer': __KNNS,
-                'output_layer': (__KNNS, {'metric': 'cosine'}), },
+        'knn': (__KNNS, {'metric': ['cosine', 'correlation', 'kullbackleibler']}),
         'svm': __SVMS,
     },
     'SiameseV1': {

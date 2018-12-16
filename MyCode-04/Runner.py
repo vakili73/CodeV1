@@ -1,3 +1,4 @@
+import time
 import numpy as np
 from Reporter import Report
 
@@ -48,7 +49,9 @@ def Run(rpt: Report, bld: str, n_cls: int, shape: tuple, db_opt: dict, bld_opt: 
 
     is_clf = True if 'classification' in bld_opt else False
     if aug_flag:
-        datagen = load_datagen('Aug'+bld_opt['datagen'])
+        datagen = []
+        datagen.append(load_datagen('Aug'+bld_opt['datagen']))
+        datagen.append(load_datagen(bld_opt['datagen']))
     else:
         datagen = load_datagen(bld_opt['datagen'])
 
@@ -115,6 +118,7 @@ def Run(rpt: Report, bld: str, n_cls: int, shape: tuple, db_opt: dict, bld_opt: 
 def Run_SVM(rpt, svm_opt, X_train,
             X_test, y_train, y_test, n_cls, title):
     for svm in svm_opt:
+        start_time = time.time()
         _title = title + \
             '_kernel_{}'.format(svm['kernel'])
         print(_title)
@@ -123,11 +127,13 @@ def Run_SVM(rpt, svm_opt, X_train,
         clf.fit(X_train, y_train)
         y_score = clf.predict_proba(X_test)
         clf_report(rpt, y_test, y_score, n_cls, _title)
+        print("--- %s seconds ---" % (time.time() - start_time))
 
 
 def Run_KNN(rpt, knn_opt, X_train,
             X_test, y_train, y_test, n_cls, title):
     for knn in knn_opt:
+        start_time = time.time()
         _title = title + \
             '_weights_{}_neighbors_{}'.format(
                 knn['weights'], knn['n_neighbors'])
@@ -137,17 +143,22 @@ def Run_KNN(rpt, knn_opt, X_train,
         clf.fit(X_train, y_train)
         y_score = clf.predict_proba(X_test)
         clf_report(rpt, y_test, y_score, n_cls, _title)
+        print("--- %s seconds ---" % (time.time() - start_time))
 
 
 def getKnnOpts(bld: str, knn_opt: dict):
     _knn_opt = []
     if bld.startswith('MyModel'):
-        _knn_opt.append(knn_opt['embed_layer'])
-        _knn_opt.append([])
-        for knn in knn_opt['output_layer'][0]:
-            _knn = dict(knn)
-            _knn.update(knn_opt['output_layer'][1])
-            _knn_opt[1].append(_knn)
+        knn = knn_opt[0]
+        _knn_opt.append(knn)
+        for key, values in knn_opt[1].items():
+            for item in values:
+                _temp = []
+                for i in range(len(knn)):
+                    _knn = dict(knn[i])
+                    _knn.update({key: item})
+                    _temp.append(_knn)
+                _knn_opt.append(_temp)
     return _knn_opt
 
 
@@ -193,14 +204,13 @@ def fitModel(schema, n_cls, dgen_opt, datagen,
              X_train, X_valid, y_train, y_valid, aug_flag):
     callbacks = [EarlyStopping(patience=PATIENCE),
                  TerminateOnNaN()]
-    if datagen == 'Original':
+    if 'Original' in datagen:
         if aug_flag:
             datagen = ImageDataGenerator(**dgen_opt)
             datagen.fit(X_train)
             traingen = datagen.flow(X_train, to_categorical(y_train, n_cls),
                                     batch_size=BATCHSIZE)
-            validgen = datagen.flow(X_valid, to_categorical(y_valid, n_cls),
-                                    batch_size=BATCHSIZE)
+            validgen = (X_valid, to_categorical(y_valid, n_cls))
         else:
             history = schema.model.fit(
                 X_train, to_categorical(y_train, n_cls), **FITOPTS, callbacks=callbacks,
@@ -210,8 +220,8 @@ def fitModel(schema, n_cls, dgen_opt, datagen,
             return history.history
     else:
         if aug_flag:
-            traingen = datagen(X_train, y_train, n_cls, dgen_opt, BATCHSIZE)
-            validgen = datagen(X_valid, y_valid, n_cls, dgen_opt, BATCHSIZE)
+            traingen = datagen[0](X_train, y_train, n_cls, dgen_opt, BATCHSIZE)
+            validgen = datagen[1](X_valid, y_valid, n_cls, BATCHSIZE)
         else:
             traingen = datagen(X_train, y_train, n_cls, BATCHSIZE)
             validgen = datagen(X_valid, y_valid, n_cls, BATCHSIZE)

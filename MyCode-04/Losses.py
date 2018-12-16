@@ -80,9 +80,6 @@ def my_loss(**kwargs):
         one = K.constant(1, dtype=K.floatx())
 
         def __loss(anc, pos, neg):
-            pos_dist_cosine = Metrics.cosine_distance(anc, pos)
-            neg_simi_cosine = Metrics.cosine_similarity(anc, neg)
-
             pos_dist_l2 = Metrics.squared_l2_distance(anc, pos)
             neg_dist_l2 = Metrics.squared_l2_distance(anc, neg)
 
@@ -96,8 +93,6 @@ def my_loss(**kwargs):
                 Metrics.entropy(K.tanh(neg_dist_kl)) +\
                 Metrics.entropy(K.tanh(pos_dist_l2)) +\
                 Metrics.entropy(K.tanh(neg_dist_l2)) +\
-                Metrics.cross_entropy(zero, pos_dist_cosine) +\
-                Metrics.cross_entropy(zero, neg_simi_cosine) +\
                 Metrics.cross_entropy(zero, K.tanh(pos_dist_kl)) +\
                 Metrics.cross_entropy(one, K.tanh(neg_dist_kl)) +\
                 Metrics.cross_entropy(zero, K.tanh(pos_dist_l2)) +\
@@ -110,11 +105,7 @@ def my_loss(**kwargs):
         loss += \
             Metrics.cross_entropy(true_a, output_a) +\
             Metrics.cross_entropy(true_p, output_p) +\
-            Metrics.cross_entropy(true_n, output_n) +\
-            Metrics.cross_entropy(zero, Metrics.cosine_distance(true_a, output_a)) +\
-            Metrics.cross_entropy(zero, Metrics.cosine_distance(true_p, output_p)) +\
-            Metrics.cross_entropy(
-                zero, Metrics.cosine_distance(true_n, output_n))
+            Metrics.cross_entropy(true_n, output_n)
         return loss
 
     return _loss
