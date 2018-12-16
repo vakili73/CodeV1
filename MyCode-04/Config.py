@@ -151,7 +151,7 @@ METHODS = {
         'datagen': 'MyTriplet',
         'classification': '',
         'knn': {'embed_layer': __KNNS,
-                'output_layer': (__KNNS, {'metric': 'L-cosine'}), },
+                'output_layer': (__KNNS, {'metric': 'cosine'}), },
         'svm': __SVMS,
     },
     'MyModelV2': {
@@ -160,7 +160,7 @@ METHODS = {
         'datagen': 'MyTriplet',
         'classification': '',
         'knn': {'embed_layer': __KNNS,
-                'output_layer': (__KNNS, {'metric': 'L-cosine'}), },
+                'output_layer': (__KNNS, {'metric': 'cosine'}), },
         'svm': __SVMS,
     },
     'SiameseV1': {

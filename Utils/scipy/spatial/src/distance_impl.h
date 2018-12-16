@@ -31,6 +31,7 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+#define FLT_EPSILON 1.19209290E-07F // decimal constant
 
 
 static NPY_INLINE void
@@ -308,6 +309,30 @@ jaccard_distance_char(const char *u, const char *v, const npy_intp n)
         denom += x | y;
     }
     return denom == 0.0 ? 0.0 : (double)num / denom;
+}
+
+
+static NPY_INLINE double
+kullbackleibler_distance_double(const double *u, const double *v, const npy_intp n)
+{
+    double d = 0.0;
+    double x, y;
+
+    npy_intp i;
+    for (i = 0; i < n; ++i) {
+        x = u[i];
+        if (x < FLT_EPSILON){
+            x = FLT_EPSILON;
+        }
+        y = v[i];
+        if (y < FLT_EPSILON){
+            y = FLT_EPSILON;
+        }
+        d += x * log(x / y);
+        d += y * log(y / x);
+    }
+
+    return d;
 }
 
 
@@ -707,6 +732,7 @@ DEFINE_CDIST(city_block, double)
 DEFINE_CDIST(euclidean, double)
 DEFINE_CDIST(hamming, double)
 DEFINE_CDIST(jaccard, double)
+DEFINE_CDIST(kullbackleibler, double)
 DEFINE_CDIST(jensenshannon, double)
 DEFINE_CDIST(sqeuclidean, double)
 
@@ -745,6 +771,7 @@ DEFINE_PDIST(city_block, double)
 DEFINE_PDIST(euclidean, double)
 DEFINE_PDIST(hamming, double)
 DEFINE_PDIST(jaccard, double)
+DEFINE_PDIST(kullbackleibler, double)
 DEFINE_PDIST(jensenshannon, double)
 DEFINE_PDIST(sqeuclidean, double)
 

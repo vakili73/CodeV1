@@ -146,8 +146,7 @@ def getKnnOpts(bld: str, knn_opt: dict):
         _knn_opt.append([])
         for knn in knn_opt['output_layer'][0]:
             _knn = dict(knn)
-            _knn.update({'metric': 'pyfunc', 'metric_params': {
-                        'func': cosine}})
+            _knn.update(knn_opt['output_layer'][1])
             _knn_opt[1].append(_knn)
     return _knn_opt
 
