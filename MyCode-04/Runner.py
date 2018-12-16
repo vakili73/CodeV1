@@ -48,12 +48,13 @@ def Run(rpt: Report, bld: str, n_cls: int, shape: tuple, db_opt: dict, bld_opt: 
     schema.model.summary()
 
     is_clf = True if 'classification' in bld_opt else False
-    if aug_flag:
-        datagen = []
-        datagen.append(load_datagen('Aug'+bld_opt['datagen']))
-        datagen.append(load_datagen(bld_opt['datagen']))
-    else:
-        datagen = load_datagen(bld_opt['datagen'])
+    if not dgen_opt == 'Original':
+        if aug_flag:
+            datagen = []
+            datagen.append(load_datagen('Aug'+bld_opt['datagen']))
+            datagen.append(load_datagen(bld_opt['datagen']))
+        else:
+            datagen = load_datagen(bld_opt['datagen'])
 
     metric_args = getMetricArgs(bld, n_cls, schema)
     metrics = load_metrics(bld_opt['metrics'], **metric_args)
@@ -208,7 +209,7 @@ def fitModel(schema, n_cls, dgen_opt, datagen,
              X_train, X_valid, y_train, y_valid, aug_flag):
     callbacks = [EarlyStopping(patience=PATIENCE),
                  TerminateOnNaN()]
-    if 'Original' in datagen:
+    if 'Original' == datagen:
         if aug_flag:
             datagen = ImageDataGenerator(**dgen_opt)
             datagen.fit(X_train)
