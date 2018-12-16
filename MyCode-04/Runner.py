@@ -93,10 +93,11 @@ def Run(rpt: Report, bld: str, n_cls: int, shape: tuple, db_opt: dict, bld_opt: 
     embed_feature_train = getFeatures(schema.getModel(), X_train)
     if isinstance(embed_feature, list):
         knn_opt = getKnnOpts(bld, knn_opt)
-        for i in range(len(knn_opt)):
-            rpt.write_text('knn_metrics_%d' % i).flush()
-            Run_KNN(rpt, knn_opt[i], embed_feature_train[i],
-                    embed_feature[i], y_train, y_test, n_cls, title+'_'+str(i))
+        for i in range(len(embed_feature_train)):
+            for j in range(len(knn_opt)):
+                rpt.write_text('knn_metrics_%d' % i).flush()
+                Run_KNN(rpt, knn_opt[j], embed_feature_train[i],
+                        embed_feature[i], y_train, y_test, n_cls, title+'_'+str(i))
     else:
         rpt.write_text('knn_metrics').flush()
         Run_KNN(rpt, knn_opt, embed_feature_train,
