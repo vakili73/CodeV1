@@ -24,21 +24,21 @@ FITOPTS = {
 __SHOTS = [5, 10, 20, 50, None]
 
 __DATAGEN_OPT_COLORED_IMAGE = {
-    'rotation_range': 15,
-    'width_shift_range': 0.15,
-    'height_shift_range': 0.15,
-    'shear_range': 0.15,
-    'channel_shift_range': 0.15,
-    'zoom_range': 0.15,
+    'rotation_range': 20,
+    'width_shift_range': 0.2,
+    'height_shift_range': 0.2,
+    'shear_range': 0.2,
+    'channel_shift_range': 0.2,
+    'zoom_range': 0.2,
     'horizontal_flip': True,
 }
 
 __DATAGEN_OPT_B_AND_W_IMAGE = {
-    'rotation_range': 15,
-    'width_shift_range': 0.15,
-    'height_shift_range': 0.15,
-    'shear_range': 0.15,
-    'zoom_range': 0.15,
+    'rotation_range': 20,
+    'width_shift_range': 0.2,
+    'height_shift_range': 0.2,
+    'shear_range': 0.2,
+    'zoom_range': 0.2,
 }
 
 DATASETS = {
@@ -56,11 +56,11 @@ DATASETS = {
         "schema": 'V01',
         "shots": __SHOTS,
         "dgen_opt": {
-            'rotation_range': 15,
-            'width_shift_range': 0.15,
-            'height_shift_range': 0.15,
-            'shear_range': 0.15,
-            'zoom_range': 0.15,
+            'rotation_range': 20,
+            'width_shift_range': 0.2,
+            'height_shift_range': 0.2,
+            'shear_range': 0.2,
+            'zoom_range': 0.2,
             'horizontal_flip': True,
         },
     },
@@ -122,8 +122,8 @@ __SVMS = [
      'gamma': 'scale', },
     {'kernel': 'rbf',
      'gamma': 'scale', },
-    {'kernel': 'poly',
-     'gamma': 'scale', },
+    # {'kernel': 'poly',
+    #  'gamma': 'scale', },
     {'kernel': 'sigmoid',
      'gamma': 'scale', },
 ]
@@ -137,20 +137,20 @@ METHODS = {
         'knn': __KNNS,
         'svm': __SVMS,
     },
-    'ConventionalV2': {
-        'loss': 'K-categorical_crossentropy',
-        'metrics': ['K-acc'],
-        'datagen': 'Original',
-        'classification': '',
-        'knn': __KNNS,
-        'svm': __SVMS,
-    },
+    # 'ConventionalV2': {
+    #     'loss': 'K-categorical_crossentropy',
+    #     'metrics': ['K-acc'],
+    #     'datagen': 'Original',
+    #     'classification': '',
+    #     'knn': __KNNS,
+    #     'svm': __SVMS,
+    # },
     'MyModelV1': {
         'loss': 'L-my_loss',
         'metrics': ['L-my_accu'],
         'datagen': 'MyTriplet',
         'classification': '',
-        'knn': (__KNNS, {'metric': ['cosine', 'correlation', 'kullbackleibler']}),
+        'knn': (__KNNS, {'metric': ['cosine', 'kullbackleibler']}), # , 'correlation'
         'svm': __SVMS,
     },
     'MyModelV2': {
@@ -158,7 +158,7 @@ METHODS = {
         'metrics': ['L-my_accu'],
         'datagen': 'MyTriplet',
         'classification': '',
-        'knn': (__KNNS, {'metric': ['cosine', 'correlation', 'kullbackleibler']}),
+        'knn': (__KNNS, {'metric': ['cosine', 'kullbackleibler']}), # , 'correlation'
         'svm': __SVMS,
     },
     'SiameseV1': {
@@ -175,13 +175,13 @@ METHODS = {
         'knn': __KNNS,
         'svm': __SVMS,
     },
-    'TripletV1': {
-        'loss': 'K-mean_squared_error',
-        'metrics': [],
-        'datagen': 'Triplet',
-        'knn': __KNNS,
-        'svm': __SVMS,
-    },
+    # 'TripletV1': {
+    #     'loss': 'K-mean_squared_error',
+    #     'metrics': [],
+    #     'datagen': 'Triplet',
+    #     'knn': __KNNS,
+    #     'svm': __SVMS,
+    # },
     'TripletV2': {
         'loss': 'L-triplet',
         'metrics': [],

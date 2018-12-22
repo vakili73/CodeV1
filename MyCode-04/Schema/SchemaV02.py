@@ -15,11 +15,14 @@ class SchemaV02(BaseSchema):
 
     def buildConventionalV1(self, shape, n_cls):
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='sigmoid'))
+        model.add(layers.Dense(512, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(256, activation='sigmoid'))
+        model.add(layers.Dense(256, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
-        layer = layers.Dense(128, activation='sigmoid')
+        layer = layers.Dense(128, activation='sigmoid',
+                             kernel_regularizer=l2(0.01))
         model.add(layer)
         model.add(layers.Dropout(0.25))
         model.add(layers.Dense(n_cls, activation='softmax'))
@@ -31,11 +34,14 @@ class SchemaV02(BaseSchema):
 
     def buildConventionalV2(self, shape, n_cls):
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='relu'))
+        model.add(layers.Dense(512, activation='relu',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(256, activation='relu'))
+        model.add(layers.Dense(256, activation='relu',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
-        layer = layers.Dense(128, activation='relu')
+        layer = layers.Dense(128, activation='relu',
+                             kernel_regularizer=l2(0.01))
         model.add(layer)
         model.add(layers.Dropout(0.25))
         model.add(layers.Dense(n_cls, activation='softmax'))
@@ -55,11 +61,14 @@ class SchemaV02(BaseSchema):
             https://doi.org/10.1017/CBO9781107415324.004
         """
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='sigmoid'))
+        model.add(layers.Dense(512, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(256, activation='sigmoid'))
+        model.add(layers.Dense(256, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(128, activation='sigmoid'))
+        model.add(layers.Dense(128, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
 
         self.input = model.input
         self.output = model.output
@@ -84,7 +93,8 @@ class SchemaV02(BaseSchema):
                 output_shape=output_shape)
             distance = distance_layer([embedded_1, embedded_2])
 
-        prediction = layers.Dense(1, activation='sigmoid')(distance)
+        prediction = layers.Dense(1, activation='sigmoid',
+                                  kernel_regularizer=l2(0.01))(distance)
 
         self.model = Model(inputs=[input_1, input_2], outputs=prediction)
         return self
@@ -98,11 +108,14 @@ class SchemaV02(BaseSchema):
             Innull 2006 Jun 17 (pp. 1735-1742). IEEE.
         """
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='sigmoid'))
+        model.add(layers.Dense(512, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(256, activation='sigmoid'))
+        model.add(layers.Dense(256, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(128, activation='sigmoid'))
+        model.add(layers.Dense(128, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
 
         self.input = model.input
         self.output = model.output
@@ -139,11 +152,14 @@ class SchemaV02(BaseSchema):
         https://doi.org/10.1007/978-3-319-24261-3_7
         """
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='sigmoid'))
+        model.add(layers.Dense(512, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(256, activation='sigmoid'))
+        model.add(layers.Dense(256, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(128, activation='sigmoid'))
+        model.add(layers.Dense(128, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
 
         self.input = model.input
         self.output = model.output
@@ -194,11 +210,14 @@ class SchemaV02(BaseSchema):
         https://doi.org/10.1109/CVPR.2015.7298682
         """
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='sigmoid'))
+        model.add(layers.Dense(512, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(256, activation='sigmoid'))
+        model.add(layers.Dense(256, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Dense(128, activation='sigmoid'))
+        model.add(layers.Dense(128, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
 
         self.input = model.input
         self.output = model.output
@@ -242,13 +261,16 @@ class SchemaV02(BaseSchema):
 
     def buildMyModelV1(self, shape, n_cls):
         model = self.build(shape)
-        model.add(layers.Dense(512, activation='sigmoid'))
+        model.add(layers.Dense(512, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
         layer03 = model.output
-        model.add(layers.Dense(256, activation='sigmoid'))
+        model.add(layers.Dense(256, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
         layer02 = model.output
-        model.add(layers.Dense(128, activation='sigmoid'))
+        model.add(layers.Dense(128, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
         layer01 = model.output
         model.add(layers.Dense(n_cls, activation='softmax'))
@@ -292,36 +314,45 @@ class SchemaV02(BaseSchema):
 
     def buildMyModelV2(self, shape, n_cls):
         model = Sequential()
-        model.add(layers.Conv2D(256, (3, 3), input_shape=shape))
+        model.add(layers.Conv2D(256, (3, 3), input_shape=shape,
+                                kernel_regularizer=l2(0.01)))
         model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.MaxPooling2D())
         model.add(layers.Dropout(0.25))
-        layer05 = layers.Dense(128, activation='sigmoid')(
+        layer05 = layers.Dense(128, activation='sigmoid',
+                               kernel_regularizer=l2(0.01))(
             layers.Flatten()(model.output))
-        model.add(layers.Conv2D(128, (3, 3)))
+        model.add(layers.Conv2D(128, (3, 3),
+                                kernel_regularizer=l2(0.01)))
         model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.MaxPooling2D())
         model.add(layers.Dropout(0.25))
-        layer04 = layers.Dense(128, activation='sigmoid')(
+        layer04 = layers.Dense(128, activation='sigmoid',
+                               kernel_regularizer=l2(0.01))(
             layers.Flatten()(model.output))
-        model.add(layers.Conv2D(128, (3, 3)))
+        model.add(layers.Conv2D(128, (3, 3),
+                                kernel_regularizer=l2(0.01)))
         model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Conv2D(64, (3, 3)))
+        model.add(layers.Conv2D(64, (3, 3),
+                                kernel_regularizer=l2(0.01)))
         model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.Dropout(0.25))
         model.add(layers.Flatten())
-        model.add(layers.Dense(512, activation='sigmoid'))
+        model.add(layers.Dense(512, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
         layer03 = model.output
-        model.add(layers.Dense(256, activation='sigmoid'))
+        model.add(layers.Dense(256, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.25))
         layer02 = model.output
-        model.add(layers.Dense(128, activation='sigmoid'))
+        model.add(layers.Dense(128, activation='sigmoid',
+                               kernel_regularizer=l2(0.01)))
         model.add(layers.Dropout(0.5))
         layer01 = model.output
         model.add(layers.Dense(n_cls, activation='softmax'))
@@ -385,21 +416,25 @@ class SchemaV02(BaseSchema):
             https://doi.org/10.1016/j.patcog.2017.09.038
         """
         model = Sequential()
-        model.add(layers.Conv2D(256, (3, 3), input_shape=shape))
+        model.add(layers.Conv2D(256, (3, 3), input_shape=shape,
+                                kernel_regularizer=l2(0.01)))
         model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.MaxPooling2D())
         model.add(layers.Dropout(0.25))
-        model.add(layers.Conv2D(128, (3, 3)))
+        model.add(layers.Conv2D(128, (3, 3),
+                                kernel_regularizer=l2(0.01)))
         model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.MaxPooling2D())
         model.add(layers.Dropout(0.25))
-        model.add(layers.Conv2D(128, (3, 3)))
+        model.add(layers.Conv2D(128, (3, 3),
+                                kernel_regularizer=l2(0.01)))
         model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.Dropout(0.25))
-        model.add(layers.Conv2D(64, (3, 3)))
+        model.add(layers.Conv2D(64, (3, 3),
+                                kernel_regularizer=l2(0.01)))
         model.add(layers.BatchNormalization())
         model.add(layers.Activation('relu'))
         model.add(layers.Dropout(0.25))
